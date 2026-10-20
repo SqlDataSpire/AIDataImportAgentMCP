@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from importer.memory_store import MemoryStore
-from importer.models import Declared, FileStatus, Signature, SignatureStatus
+from importer.models import FileStatus, Signature, SignatureStatus
 from importer.pipeline import process
 from importer.proposals import new_review, normalize, with_candidates
 from tests.support import fixture

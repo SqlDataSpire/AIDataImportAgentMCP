@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import getpass
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -112,7 +111,7 @@ def check_or_create_database(
             else:
                 print(f"Database [{database}] was not created.")
                 return False
-    except Exception as exc:
+    except Exception:
         # If connecting to master failed or user doesn't have master access, try direct connection to target DB
         try:
             target_engine = db._connection_engine(name="target_check", server=server, database=database, doc=doc)
@@ -142,6 +141,8 @@ def apply_schema(engine, *, dev_rebuild: bool = False) -> None:
         has_schema = conn.execute(text("SELECT OBJECT_ID(N'dbo.artifact_versions')")).scalar_one_or_none() is not None
 
     schema_sql_path = config.home() / "sql" / "001_schema.sql"
+    if not schema_sql_path.exists():
+        schema_sql_path = Path(__file__).resolve().parent / "sql" / "001_schema.sql"
     if not schema_sql_path.exists():
         print(f"Warning: schema file not found at {schema_sql_path}", file=sys.stderr)
         return

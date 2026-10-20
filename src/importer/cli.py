@@ -156,7 +156,10 @@ def cmd_db_rebuild(args) -> int:
     if typed.strip() != identity.database:
         print("confirmation did not match the database name; nothing changed", file=sys.stderr)
         return 1
-    script = (config.home() / "sql" / "001_schema.sql").read_text(encoding="utf-8")
+    schema_path = config.home() / "sql" / "001_schema.sql"
+    if not schema_path.exists():
+        schema_path = Path(__file__).resolve().parent / "sql" / "001_schema.sql"
+    script = schema_path.read_text(encoding="utf-8")
     with engine.begin() as conn:
         conn.exec_driver_sql(REBUILD_DROP_SQL)
         conn.exec_driver_sql(script)

@@ -1,0 +1,15 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      databaseUrl:
+        type: string
+        description: "SQL Server SQLAlchemy connection string (e.g. mssql+pyodbc://user:pass@host/db?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes)"
+      importerHome:
+        type: string
+        description: "Absolute path to workspace containing database.env or artifacts"
+    required: []
+  commandFunction:
+    - importer
+    - mcp

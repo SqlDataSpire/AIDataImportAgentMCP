@@ -7,7 +7,6 @@ import uuid
 from pathlib import Path
 
 import pytest
-from sqlalchemy import text
 
 from importer import environment, onboarding, settings
 from importer.admin import register_schema

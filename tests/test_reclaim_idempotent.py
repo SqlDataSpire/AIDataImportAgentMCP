@@ -57,7 +57,7 @@ def test_second_pass_lands_nothing_new(payloads: list[str]) -> None:
     store = _store_with(payloads)
     rule = EvenLengthRule()
 
-    first = reclaim_schema(store, SCHEMA, rule)
+    _ = reclaim_schema(store, SCHEMA, rule)
     second = reclaim_schema(store, SCHEMA, rule)
 
     assert second == 0  # idempotent: nothing new on the re-run

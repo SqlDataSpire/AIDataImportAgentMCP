@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from importer import cli, db
+from importer import db
 from importer.setup_wizard import (
     _ensure_gitignore,
     _prompt,
     _prompt_bool,
-    apply_schema,
     check_or_create_database,
     run_setup,
     write_database_env,

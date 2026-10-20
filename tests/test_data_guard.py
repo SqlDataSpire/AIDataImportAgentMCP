@@ -58,8 +58,15 @@ def test_ordinary_work_is_not_interrupted(tool, tool_input):
 def test_hook_entry_point_speaks_the_hook_protocol():
     import os
     env = {**os.environ, "IMPORTER_DATA_GUARD": "on"}
-    run = lambda payload: subprocess.run([sys.executable, "-m", "importer.data_guard"], input=payload,
-                                         capture_output=True, text=True, timeout=60, env=env)
+    def run(payload: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [sys.executable, "-m", "importer.data_guard"],
+            input=payload,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env=env,
+        )
     asked = run(json.dumps({"tool_name": "Read", "tool_input": {"file_path": SHARE}}))
     assert asked.returncode == 0
     assert json.loads(asked.stdout)["hookSpecificOutput"]["hookEventName"] == "PreToolUse"
@@ -78,8 +85,6 @@ def test_off_lets_everything_through(monkeypatch):
 
 
 def test_auto_guards_only_while_an_importer_mcp_server_runs(monkeypatch, tmp_path):
-    import os
-
     from importer import data_guard
 
     monkeypatch.delenv("IMPORTER_DATA_GUARD")  # default: auto

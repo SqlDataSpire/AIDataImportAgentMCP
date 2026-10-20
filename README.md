@@ -1,5 +1,9 @@
 # Data Agent: Importer
 
+[![CI](https://github.com/SqlDataSpire/AIDataImportAgentMCP/actions/workflows/ci.yml/badge.svg)](https://github.com/SqlDataSpire/AIDataImportAgentMCP/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
+
 An **ELT** import agent: it lands as much of each incoming file as possible, then
 leaves conversion/coercion/cleaning to a separate downstream stage. Control flow
 is a **state machine over a ledger**, not a linear pipeline:
