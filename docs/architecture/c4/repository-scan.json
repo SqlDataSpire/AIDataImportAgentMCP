@@ -7,7 +7,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.admin",
@@ -15,7 +16,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.agent",
@@ -23,7 +25,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.cli",
@@ -31,7 +34,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.config",
@@ -39,7 +43,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.data_guard",
@@ -47,7 +52,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.db",
@@ -55,7 +61,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.detector",
@@ -63,7 +70,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.environment",
@@ -71,7 +79,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.fingerprint",
@@ -79,7 +88,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.loader",
@@ -87,7 +97,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.locators",
@@ -95,7 +106,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.mappers",
@@ -103,7 +115,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.masking",
@@ -111,7 +124,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.mcp_server",
@@ -119,7 +133,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.memory_store",
@@ -127,7 +142,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.metrics",
@@ -135,7 +151,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.models",
@@ -143,7 +160,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.mssql_store",
@@ -151,7 +169,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.onboarding",
@@ -159,7 +178,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.pipeline",
@@ -167,7 +187,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.precheck",
@@ -175,7 +196,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.profiler",
@@ -183,7 +205,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.proposals",
@@ -191,7 +214,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.readers",
@@ -199,7 +223,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.reclaim",
@@ -207,7 +232,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.reject_store",
@@ -215,7 +241,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.repositories",
@@ -223,7 +250,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.rules",
@@ -231,7 +259,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.schema_sources",
@@ -239,7 +268,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.schema_tables",
@@ -247,7 +277,8 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.settings",
@@ -255,7 +286,17 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
+    },
+    {
+      "name": "importer.setup_wizard",
+      "path": "src/importer/setup_wizard.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "importer.shapers",
@@ -263,7 +304,17 @@
       "group": "src",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
+    },
+    {
+      "name": "importer.trees",
+      "path": "src/importer/trees.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false,
+      "inferred": false
     },
     {
       "name": "tests",
@@ -271,14 +322,16 @@
       "group": "",
       "ecosystem": "Python",
       "in_solution": null,
-      "duplicate_name": false
+      "duplicate_name": false,
+      "inferred": false
     }
   ],
   "orphan_projects": [],
   "duplicate_project_names": [],
   "folders": [
-    "Documents",
+    ".github",
     "docs",
+    "scratch",
     "scripts",
     "sql",
     "src",

@@ -1,6 +1,8 @@
+---
+title: "A known file lands (no model)"
+---
 sequenceDiagram
     actor requestor as Requestor
-    participant data_import_agent as importer (CLI + MCP server)
     participant importer_cli as importer.cli
     participant importer_pipeline as importer.pipeline
     participant importer_locators as importer.locators
@@ -10,7 +12,8 @@ sequenceDiagram
     participant importer_loader as importer.loader
     participant importer_mssql_store as importer.mssql_store
     participant db_sql_server as Control database (import_agent_dev)
-    requestor->>data_import_agent: importer process ‹locator› --project --class --type [CLI]
+    participant data_import_agent as importer (CLI + MCP server)
+    requestor->>importer_cli: importer process <locator> --project --class --type [CLI]
     importer_cli->>importer_pipeline: process()
     importer_pipeline->>importer_locators: Read the file and hash it
     importer_locators->>file_shares: Read bytes [SMB]

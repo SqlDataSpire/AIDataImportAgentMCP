@@ -1,62 +1,25 @@
 ---
-config:
-  layout: elk
+title: "Data Agent: Importer · Containers"
 ---
 flowchart TB
-    requestor("`**Requestor**
-[Person]
-Submits a file with its project,
-class and type`")
-    steward("`**Data steward**
-[Person]
-Approves mappings; registers
-destination schemas`")
-    subgraph boundary["`**Data Agent: Importer** [Software System]`"]
-        data_import_agent["`**importer (CLI + MCP server)**
-[Container: Python 3.14, SQLAlchemy Core, pyodbc, MCP SDK]
-The importer CLI and the importer
-mcp server`"]
-        db_sql_server[("`**Control database (import_agent_dev)**
-[Container: SQL Server]
-Ledger, registry, versioned
-artifacts, raw zone`")]
+    requestor("Requestor<br/>[Person]<br/>Submits a file with its project,<br/>class and type")
+    steward("Data steward<br/>[Person]<br/>Approves mappings; registers<br/>destination schemas")
+    subgraph boundary["Data Agent: Importer [Software System]"]
+        data_import_agent["importer (CLI + MCP server)<br/>[Container: Python 3.11+, SQLAlchemy Core, pyodbc, MCP SDK]<br/>The importer CLI and the importer<br/>mcp server"]
+        db_sql_server[("Control database (import_agent_dev)<br/>[Container: SQL Server]<br/>Ledger, registry, versioned<br/>artifacts, raw zone")]
     end
-    destination_dbs["`**Destination warehouse databases**
-[Software System]
-NPVCS, JSON_INDEX, RX,
-NPIDATA_IMPORT, ZIPCODE (read
-only)`"]
-    claude_client["`**User's Claude client**
-[Software System]
-Claude Code / Desktop: the
-onboarding agent (masked data
-only)`"]
-    file_shares["`**Shared file locations**
-[Software System]
-SMB / Azure Files shares with
-incoming files`"]
-    azure_blob["`**Azure Blob Storage**
-[Software System]
-Blob containers with incoming
-files (Entra auth)`"]
-    requestor -->|"`Submits files to
-[CLI]`"| data_import_agent
-    steward -->|"`Approves mappings in`"| claude_client
-    steward -->|"`Configures and imports
-schemas with
-[CLI]`"| data_import_agent
-    claude_client -->|"`Calls onboarding tools on
-[MCP over stdio]`"| data_import_agent
-    data_import_agent -->|"`Reads files from
-[SMB]`"| file_shares
-    data_import_agent -->|"`Reads files from
-[azure-storage-blob]`"| azure_blob
-    data_import_agent -->|"`Records state and lands rows
-in
-[pyodbc]`"| db_sql_server
-    data_import_agent -->|"`Reads schemas from (SELECT
-only)
-[pyodbc]`"| destination_dbs
+    destination_dbs["Destination warehouse databases<br/>[Software System]<br/>Destination operational and<br/>warehouse databases (read only)"]
+    claude_client["User's Claude client<br/>[Software System]<br/>Claude Code / Desktop: the<br/>onboarding agent (masked data<br/>only)"]
+    file_shares["Shared file locations<br/>[Software System]<br/>SMB / Azure Files shares with<br/>incoming files"]
+    azure_blob["Azure Blob Storage<br/>[Software System]<br/>Blob containers with incoming<br/>files (Entra auth)"]
+    requestor -->|"Submits files to<br/>[CLI]"| data_import_agent
+    steward -->|"Approves mappings in"| claude_client
+    steward -->|"Configures and imports<br/>schemas with<br/>[CLI]"| data_import_agent
+    claude_client -->|"Calls onboarding tools on<br/>[MCP over stdio]"| data_import_agent
+    data_import_agent -->|"Reads files from<br/>[SMB]"| file_shares
+    data_import_agent -->|"Reads files from<br/>[azure-storage-blob]"| azure_blob
+    data_import_agent -->|"Records state and lands rows<br/>in<br/>[pyodbc]"| db_sql_server
+    data_import_agent -->|"Reads schemas from (SELECT<br/>only)<br/>[pyodbc]"| destination_dbs
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef container fill:#1168bd,stroke:#0b4884,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff

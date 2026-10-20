@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "repository": "AIDataImportAgentMCP",
+  "facts_file": "c4-facts.json",
+  "context": {
+    "containers": [
+      {
+        "id": "data-import-agent",
+        "name": "data-import-agent",
+        "kind": "mcp-server + cli",
+        "technology": "Python, MCP SDK, CLI",
+        "path": "."
+      }
+    ],
+    "data_stores": [
+      {
+        "id": "db-sql-server",
+        "name": "SQL Server",
+        "technology": "SQL Server"
+      }
+    ],
+    "external_systems": [],
+    "endpoints_detected": 0,
+    "compose_services": [],
+    "dockerfiles": [
+      "Dockerfile"
+    ],
+    "kubernetes_manifests": 0,
+    "ci_files": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/release.yml"
+    ],
+    "hosting_files": [
+      "Dockerfile"
+    ],
+    "documents": [
+      "CLAUDE.md",
+      "INSTRUCTIONS.md",
+      "README.md",
+      "docs/mapping-manual.md",
+      "docs/architecture/README.md",
+      "docs/architecture/c4/ArchitectureReport.md",
+      "docs/architecture/generated/ArchitectureReport.md",
+      "docs/superpowers/plans/2026-10-03-m2a-fast-path.md",
+      "docs/superpowers/plans/2026-10-03-m2b-onboarding.md",
+      "docs/superpowers/plans/2026-10-08-m2c1-nesting-trees.md",
+      "docs/superpowers/specs/2026-10-02-m2a-fast-path-design.md",
+      "docs/superpowers/specs/2026-10-03-m2b-onboarding-design.md",
+      "docs/superpowers/specs/2026-10-08-m2c1-nesting-trees-design.md"
+    ],
+    "documents_total": 13,
+    "model": {
+      "people": [
+        {
+          "id": "requestor",
+          "name": "Requestor"
+        },
+        {
+          "id": "steward",
+          "name": "Data steward"
+        }
+      ],
+      "external_systems": [
+        {
+          "id": "claude-client",
+          "name": "User's Claude client",
+          "description": "Claude Code / Desktop: the onboarding agent (masked data only)"
+        },
+        {
+          "id": "file-shares",
+          "name": "Shared file locations",
+          "description": "SMB / Azure Files shares with incoming files"
+        },
+        {
+          "id": "azure-blob",
+          "name": "Azure Blob Storage",
+          "description": "Blob containers with incoming files (Entra auth)"
+        }
+      ],
+      "excluded": [],
+      "flows": [
+        "A known file lands (no model)",
+        "An unknown file is onboarded with Claude",
+        "Destination schemas are registered"
+      ]
+    }
+  },
+  "signals": [
+    {
+      "id": "sec-01",
+      "lens": "security",
+      "kind": "secret-default",
+      "summary": "ID-TOKEN has a hardcoded value or default in source or config",
+      "confidence": "high",
+      "locations": [
+        ".github/workflows/release.yml:27"
+      ],
+      "containers": [
+        "data-import-agent"
+      ],
+      "detail": {
+        "variable": "ID-TOKEN",
+        "forms": [
+          "config"
+        ]
+      }
+    },
+    {
+      "id": "sec-02",
+      "lens": "security",
+      "kind": "credentials-in-url",
+      "summary": "Connection strings embed a password",
+      "confidence": "low",
+      "locations": [
+        "smithery.yaml:8"
+      ],
+      "containers": [
+        "data-import-agent"
+      ],
+      "detail": {
+        "schemes": [
+          "mssql+pyodbc"
+        ],
+        "files": 1
+      }
+    },
+    {
+      "id": "dat-01",
+      "lens": "data",
+      "kind": "models-without-migrations",
+      "summary": "1 file(s) define persisted models and the repository has no migration folder or tool",
+      "confidence": "high",
+      "locations": [
+        "src/importer/mappers/tree.py:135"
+      ],
+      "containers": [
+        "data-import-agent"
+      ],
+      "detail": {
+        "model_files": 1
+      }
+    },
+    {
+      "id": "inf-01",
+      "lens": "infrastructure",
+      "kind": "no-healthcheck",
+      "summary": "Dockerfile defines no HEALTHCHECK",
+      "confidence": "high",
+      "locations": [
+        "Dockerfile:1"
+      ],
+      "containers": [
+        "data-import-agent"
+      ],
+      "detail": {
+        "probe_defined_elsewhere": false,
+        "probe_files": []
+      }
+    }
+  ],
+  "not_checked": [
+    "Everything here is static: no running system, network or database was inspected.",
+    "Only files git tracks, or would track, are scanned; gitignored build output is skipped.",
+    "Secrets are matched by name in source and in JSON, YAML, INI, .env, .npmrc and XML config; a secret under an unusual name or in another format is missed.",
+    "Authentication is a marker search per container; a gateway or middleware using other names is invisible to it.",
+    "Cross-container imports are detected for Python and JS/TS; c4-facts component edges cover JVM, C# and Go.",
+    "Migrations are detected by folder or tool-config name, not by whether they match the models.",
+    "CI, hosting and Kubernetes files are listed in the context but yield no signals; read them for the deployment story."
+  ]
+}

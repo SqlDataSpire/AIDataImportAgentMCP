@@ -1,54 +1,21 @@
 ---
-config:
-  layout: elk
+title: "Data Agent: Importer · System context"
 ---
 flowchart TB
-    requestor("`**Requestor**
-[Person]
-Submits a file with its project,
-class and type`")
-    steward("`**Data steward**
-[Person]
-Approves mappings; registers
-destination schemas`")
-    system["`**Data Agent: Importer**
-[Software System]
-Lands incoming files into a raw
-zone; Claude-assisted onboarding
-for unknown files`"]
-    claude_client["`**User's Claude client**
-[Software System]
-Claude Code / Desktop: the
-onboarding agent (masked data
-only)`"]
-    file_shares["`**Shared file locations**
-[Software System]
-SMB / Azure Files shares with
-incoming files`"]
-    azure_blob["`**Azure Blob Storage**
-[Software System]
-Blob containers with incoming
-files (Entra auth)`"]
-    destination_dbs["`**Destination warehouse databases**
-[Software System]
-NPVCS, JSON_INDEX, RX,
-NPIDATA_IMPORT, ZIPCODE (read
-only)`"]
-    requestor -->|"`Submits files to
-[CLI]`"| system
-    steward -->|"`Approves mappings in`"| claude_client
-    steward -->|"`Configures and imports
-schemas with
-[CLI]`"| system
-    claude_client -->|"`Calls onboarding tools on
-[MCP over stdio]`"| system
-    system -->|"`Reads files from
-[SMB]`"| file_shares
-    system -->|"`Reads files from
-[azure-storage-blob]`"| azure_blob
-    system -->|"`Reads schemas from (SELECT
-only)
-[pyodbc]`"| destination_dbs
+    requestor("Requestor<br/>[Person]<br/>Submits a file with its project,<br/>class and type")
+    steward("Data steward<br/>[Person]<br/>Approves mappings; registers<br/>destination schemas")
+    system["Data Agent: Importer<br/>[Software System]<br/>Lands incoming files into a raw<br/>zone; Claude-assisted onboarding<br/>for unknown files"]
+    claude_client["User's Claude client<br/>[Software System]<br/>Claude Code / Desktop: the<br/>onboarding agent (masked data<br/>only)"]
+    file_shares["Shared file locations<br/>[Software System]<br/>SMB / Azure Files shares with<br/>incoming files"]
+    azure_blob["Azure Blob Storage<br/>[Software System]<br/>Blob containers with incoming<br/>files (Entra auth)"]
+    destination_dbs["Destination warehouse databases<br/>[Software System]<br/>Destination operational and<br/>warehouse databases (read only)"]
+    requestor -->|"Submits files to<br/>[CLI]"| system
+    steward -->|"Approves mappings in"| claude_client
+    steward -->|"Configures and imports<br/>schemas with<br/>[CLI]"| system
+    claude_client -->|"Calls onboarding tools on<br/>[MCP over stdio]"| system
+    system -->|"Reads files from<br/>[SMB]"| file_shares
+    system -->|"Reads files from<br/>[azure-storage-blob]"| azure_blob
+    system -->|"Reads schemas from (SELECT<br/>only)<br/>[pyodbc]"| destination_dbs
     classDef person fill:#08427b,stroke:#052e56,color:#ffffff
     classDef container fill:#1168bd,stroke:#0b4884,color:#ffffff
     classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff

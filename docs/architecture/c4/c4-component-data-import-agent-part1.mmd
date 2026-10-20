@@ -1,0 +1,69 @@
+---
+title: "importer (CLI + MCP server) / part 1"
+---
+flowchart TB
+    subgraph boundary["importer (CLI + MCP server) / part 1 [Container]"]
+        importer_addresses["addresses<br/>[Component]<br/>Parses and validates destination<br/>database addresses<br/>[server].[db].[schema].[table]"]
+        importer_agent["agent<br/>[Component]<br/>Agent stub for slow-path<br/>resolution workflows"]
+        importer_config["config<br/>[Component]<br/>Configuration loader for<br/>database.env, directory paths, and<br/>settings"]
+        importer_data_guard["data_guard<br/>[Component]<br/>Claude Code hook asking permission<br/>before any direct read of file<br/>contents"]
+        importer_locators["locators<br/>[Component]<br/>Reads files from SMB, Azure Files<br/>or Blob locators; verifies the<br/>SHA-256"]
+        importer_masking["masking<br/>[Component]<br/>Reduces every row-derived value to<br/>its shape before it can leave<br/>(letter a, digit 9)"]
+        importer_metrics["metrics<br/>[Component]<br/>percent_parsed / percent_loaded<br/>with the monotonic floor<br/>(invariant #1)"]
+        importer_precheck["precheck<br/>[Component]<br/>Row-level validation and schema<br/>conformity verification prior to<br/>staging"]
+        importer_proposals["proposals<br/>[Component]<br/>Candidate generation, proposal<br/>schemas, and review records"]
+        importer_readers["readers<br/>[Component]<br/>Readers for delimited, Excel,<br/>JSON, NDJSON and XML"]
+        importer_reject_store["reject_store<br/>[Component]<br/>Rejection storage protocol and in-<br/>memory test reference"]
+        importer_rules["rules<br/>[Component]<br/>Validation and transformation<br/>rules for row parsing and reclaim"]
+        importer_db["db<br/>[Component]<br/>SQLAlchemy engine management and<br/>read-only destination connection<br/>factory"]
+        importer_reclaim["reclaim<br/>[Component]<br/>Idempotent reclaim of rejects<br/>(invariant #2)"]
+        importer_repositories["repositories<br/>[Component]<br/>Repository protocols for<br/>transactions, ledger, and<br/>artifacts"]
+        importer_schema_tables["schema_tables<br/>[Component]<br/>Dynamic table creation and<br/>management for raw and stage<br/>tables"]
+        importer_shapers["shapers<br/>[Component]<br/>Structural transforms such as<br/>Excel crosstab unpivot and anchor<br/>headers"]
+        importer_trees["trees<br/>[Component]<br/>Nesting tree structures for<br/>complex hierarchical formats"]
+        importer_environment["environment<br/>[Component]<br/>DEV/PROD marker and the DEV guard"]
+        subgraph shared["Shared"]
+            importer_models["models<br/>[Component]<br/>Statuses, row types and results<br/>shared by every layer"]
+        end
+    end
+    importer_db --> importer_config
+    importer_reclaim --> importer_reject_store
+    importer_reclaim --> importer_rules
+    importer_repositories --> importer_reject_store
+    importer_schema_tables --> importer_addresses
+    importer_shapers --> importer_readers
+    importer_trees --> importer_readers
+    importer_environment --> importer_schema_tables
+    importer_agent ~~~ importer_proposals
+    importer_data_guard ~~~ importer_db
+    importer_locators ~~~ importer_reclaim
+    importer_masking ~~~ importer_repositories
+    importer_metrics ~~~ importer_shapers
+    importer_precheck ~~~ importer_trees
+    importer_proposals ~~~ importer_environment
+    db_sql_server[("Control database (import_agent_dev)<br/>[Container: SQL Server]<br/>Ledger, registry, versioned<br/>artifacts, raw zone")]
+    importer_db -->|"Records state and lands rows<br/>in<br/>[pyodbc]"| db_sql_server
+    requestor("Requestor<br/>[Person]<br/>Submits a file with its project,<br/>class and type")
+    requestor -->|"Submits files to<br/>[CLI]"| boundary
+    steward("Data steward<br/>[Person]<br/>Approves mappings; registers<br/>destination schemas")
+    steward -->|"Configures and imports<br/>schemas with<br/>[CLI]"| boundary
+    claude_client["User's Claude client<br/>[Software System]<br/>Claude Code / Desktop: the<br/>onboarding agent (masked data<br/>only)"]
+    claude_client -->|"Calls onboarding tools on<br/>[MCP over stdio]"| boundary
+    file_shares["Shared file locations<br/>[Software System]<br/>SMB / Azure Files shares with<br/>incoming files"]
+    boundary -->|"Reads files from<br/>[SMB]"| file_shares
+    azure_blob["Azure Blob Storage<br/>[Software System]<br/>Blob containers with incoming<br/>files (Entra auth)"]
+    boundary -->|"Reads files from<br/>[azure-storage-blob]"| azure_blob
+    destination_dbs["Destination warehouse databases<br/>[Software System]<br/>Destination operational and<br/>warehouse databases (read only)"]
+    boundary -->|"Reads schemas from (SELECT<br/>only)<br/>[pyodbc]"| destination_dbs
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
+    classDef container fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
+    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
+    classDef shared fill:#dbe9f6,stroke:#5d82a8,color:#000000,stroke-dasharray:4 3
+    class importer_addresses,importer_agent,importer_config,importer_data_guard,importer_locators,importer_masking,importer_metrics,importer_precheck,importer_proposals,importer_readers,importer_reject_store,importer_rules,importer_db,importer_reclaim,importer_repositories,importer_schema_tables,importer_shapers,importer_trees,importer_environment component
+    class importer_models shared
+    class db_sql_server container
+    class requestor,steward person
+    class claude_client,file_shares,azure_blob,destination_dbs external
+    style boundary fill:none,stroke:#444444,stroke-dasharray:6 4

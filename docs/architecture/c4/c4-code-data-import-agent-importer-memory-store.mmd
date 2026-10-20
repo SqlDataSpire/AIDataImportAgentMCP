@@ -1,0 +1,42 @@
+---
+title: "importer (CLI + MCP server) · importer.memory_store"
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction TB
+    class MemoryStore {
+        +state() _State
+        +transaction() Iterator[MemoryTx]
+    }
+    class MemoryTx
+    class MemoryLedger {
+        +create_or_get(idempotency_key, source, original_filename, source_path, declared, request_context)
+        +get(file_id)
+        +transition(file_id, src, dst)
+        +begin_reentry(file_id)
+        +set_signature(file_id, signature_id)
+        +set_encoding(file_id, encoding)
+        +set_error(file_id, message)
+        +record_metrics(file_id, rows_total, rows_landed, rows_rejected, percent_parsed, percent_loaded)
+        …(1 more)
+    }
+    class MemoryRawZone {
+        +ensure_tables(schema_id, columns)
+        +clear_stage(file_id, target)
+        +stage_batch(target, rows)
+        +promote(file_id, target)
+        +count_landed(file_id, target)
+    }
+    class RawFault {
+        <<record>>
+    }
+    MemoryStore ..> RawFault
+    MemoryTx ..> RawFault
+    MemoryRawZone ..> RawFault
+    style MemoryStore fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MemoryTx fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MemoryLedger fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MemoryRawZone fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style RawFault fill:#85bbf0,stroke:#5d82a8,color:#000000

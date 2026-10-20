@@ -26,7 +26,7 @@
     {
       "id": "data-import-agent",
       "name": "importer (CLI + MCP server)",
-      "technology": "Python 3.14, SQLAlchemy Core, pyodbc, MCP SDK",
+      "technology": "Python 3.11+, SQLAlchemy Core, pyodbc, MCP SDK",
       "description": "The importer CLI and the importer mcp server",
       "evidence": [
         "pyproject.toml",
@@ -47,13 +47,13 @@
     {
       "id": "destination-dbs",
       "name": "Destination warehouse databases",
-      "technology": "SQL Server (CSSNPI)",
+      "technology": "SQL Server",
       "type": "database",
       "external": true,
-      "description": "NPVCS, JSON_INDEX, RX, NPIDATA_IMPORT, ZIPCODE (read only)",
+      "description": "Destination operational and warehouse databases (read only)",
       "evidence": [
-        "src/importer/db.py:106",
-        "src/importer/schema_sources.py:36"
+        "src/importer/db.py:90",
+        "src/importer/schema_sources.py:30"
       ]
     }
   ],
@@ -155,7 +155,21 @@
       "importer.data_guard": "Claude Code hook asking permission before any direct read of file contents",
       "importer.metrics": "percent_parsed / percent_loaded with the monotonic floor (invariant #1)",
       "importer.reclaim": "Idempotent reclaim of rejects (invariant #2)",
-      "importer.models": "Statuses, row types and results shared by every layer"
+      "importer.models": "Statuses, row types and results shared by every layer",
+      "importer.setup_wizard": "Interactive and scriptable first-run standup wizard; creates database and deploys control schema",
+      "importer.db": "SQLAlchemy engine management and read-only destination connection factory",
+      "importer.config": "Configuration loader for database.env, directory paths, and settings",
+      "importer.fingerprint": "Computes file structural fingerprints and physical signatures",
+      "importer.addresses": "Parses and validates destination database addresses [server].[db].[schema].[table]",
+      "importer.schema_tables": "Dynamic table creation and management for raw and stage tables",
+      "importer.reject_store": "Rejection storage protocol and in-memory test reference",
+      "importer.repositories": "Repository protocols for transactions, ledger, and artifacts",
+      "importer.proposals": "Candidate generation, proposal schemas, and review records",
+      "importer.rules": "Validation and transformation rules for row parsing and reclaim",
+      "importer.shapers": "Structural transforms such as Excel crosstab unpivot and anchor headers",
+      "importer.trees": "Nesting tree structures for complex hierarchical formats",
+      "importer.agent": "Agent stub for slow-path resolution workflows",
+      "importer.precheck": "Row-level validation and schema conformity verification prior to staging"
     }
   },
   "flows": [
@@ -163,10 +177,13 @@
       "id": "process-known-file",
       "name": "A known file lands (no model)",
       "description": "importer process on a file whose signature is registered.",
+      "evidence": [
+        "src/importer/pipeline.py:44"
+      ],
       "steps": [
         {
           "from": "requestor",
-          "to": "data-import-agent",
+          "to": "importer.cli",
           "description": "importer process <locator> --project --class --type",
           "technology": "CLI"
         },
@@ -224,6 +241,10 @@
       "id": "onboard-unknown-file",
       "name": "An unknown file is onboarded with Claude",
       "description": "The file was quarantined with a 'looks like' proposal; the steward maps it in a Claude session.",
+      "evidence": [
+        "src/importer/onboarding.py:100",
+        "src/importer/mcp_server.py:65"
+      ],
       "steps": [
         {
           "from": "steward",
@@ -296,12 +317,15 @@
     {
       "id": "import-destination-schemas",
       "name": "Destination schemas are registered",
-      "description": "importer schema import \"NPVCS.*.*\"; destinations are only read.",
+      "description": "importer schema import \"WAREHOUSE.*.*\"; destinations are only read.",
+      "evidence": [
+        "src/importer/schema_sources.py:30"
+      ],
       "steps": [
         {
           "from": "steward",
           "to": "data-import-agent",
-          "description": "importer schema import \"NPVCS.*.*\"",
+          "description": "importer schema import \"WAREHOUSE.*.*\"",
           "technology": "CLI"
         },
         {
@@ -340,5 +364,31 @@
       ]
     }
   ],
+  "code": [
+    {
+      "container": "data-import-agent",
+      "component": "importer.mssql_store",
+      "description": "SQL Server persistent implementation of ledger, registry, and raw stores",
+      "types": ["MssqlStore", "MssqlTx", "MssqlLedger", "MssqlRawZone", "MssqlRegistry", "MssqlRejectStore"]
+    },
+    {
+      "container": "data-import-agent",
+      "component": "importer.memory_store",
+      "description": "In-memory test store mirroring all transactional protocols with simulated fault injection",
+      "types": ["MemoryStore", "MemoryTx", "MemoryLedger", "MemoryRawZone", "RawFault"]
+    }
+  ],
+  "summary": {
+    "overview": "Data Agent: Importer is an ELT state-machine system operating over a SQL Server ledger. It ingests incoming delimited, Excel, JSON, NDJSON, and XML files, routing known signatures through a deterministic fast path (read -> fingerprint -> map -> stage with bisection -> promote). Unrecognized or invalid files trigger a quarantined slow path where an operator-guided agent via MCP proposes reviewed, versioned mappings without modifying production code.",
+    "findings": [
+      "The MCP server runs over stdio with data boundaries strictly maintained by masking all preview row data into abstract shapes (src/importer/masking.py:10).",
+      "Control plane operations strictly enforce DEV vs PROD guards before executing destructive operations such as rebuilds or schema deployment (src/importer/environment.py:40).",
+      "Dynamic schema creation ensures landing raw and stage tables are initialized just-in-time on request rather than pre-seeded (src/importer/schema_tables.py:35)."
+    ],
+    "recommendations": [
+      "Continue using database.env for credentials with local file protection and exclude it from version control.",
+      "Verify that all destination warehouse connections are maintained strictly SELECT-only via dedicated read-only roles."
+    ]
+  },
   "excluded": []
 }

@@ -1,0 +1,100 @@
+---
+title: "importer (CLI + MCP server) / part 2"
+---
+flowchart TB
+    subgraph boundary["importer (CLI + MCP server) / part 2 [Container]"]
+        importer_fingerprint["fingerprint<br/>[Component]<br/>Computes file structural<br/>fingerprints and physical<br/>signatures"]
+        importer_loader["loader<br/>[Component]<br/>Stages rows with bisection, then<br/>promotes them transactionally"]
+        importer_mappers["mappers<br/>[Component]<br/>Declarative specs, shapers and<br/>hash-pinned plugins extract rows"]
+        importer_memory_store["memory_store<br/>[Component]<br/>In-memory repositories used by the<br/>unit tests"]
+        importer_mssql_store["mssql_store<br/>[Component]<br/>SQL Server repositories: ledger,<br/>registry, artifacts, rejects,<br/>audit, raw zone"]
+        importer_profiler["profiler<br/>[Component]<br/>Miss profiling and 'looks like'<br/>candidates"]
+        importer_settings["settings<br/>[Component]<br/>Shared settings stored as a<br/>versioned config artifact"]
+        importer_admin["admin<br/>[Component]<br/>Registration helpers: schemas,<br/>mappers, signatures"]
+        importer_detector["detector<br/>[Component]<br/>Signature lookup in the registry<br/>(model-free)"]
+        importer_setup_wizard["setup_wizard<br/>[Component]<br/>Interactive and scriptable first-<br/>run standup wizard; creates<br/>database and deploys control<br/>schema"]
+        importer_pipeline["pipeline<br/>[Component]<br/>The ledger state machine:<br/>process() and retry()"]
+        importer_schema_sources["schema_sources<br/>[Component]<br/>Destination schema import, live<br/>(read-only) or from a column file"]
+        importer_onboarding["onboarding<br/>[Component]<br/>Confirm-and-bind: reuse / exact /<br/>fallback drafts, previews, submit,<br/>reject, accept and bind"]
+        importer_mcp_server["mcp_server<br/>[Component]<br/>MCP tools and the onboard prompt<br/>for the user's Claude client;<br/>sign-off gate on accept_mapping /<br/>register_schema"]
+        importer_cli["cli<br/>[Component]<br/>The importer command line:<br/>process, retry, pending, config,<br/>schema import, db init/rebuild,<br/>mcp"]
+    end
+    importer_trees["trees<br/>[Component, in part 1]"]
+    importer_repositories["repositories<br/>[Component, in part 1]"]
+    importer_shapers["shapers<br/>[Component, in part 1]"]
+    importer_metrics["metrics<br/>[Component, in part 1]"]
+    importer_proposals["proposals<br/>[Component, in part 1]"]
+    importer_schema_tables["schema_tables<br/>[Component, in part 1]"]
+    importer_db["db<br/>[Component, in part 1]"]
+    importer_environment["environment<br/>[Component, in part 1]"]
+    importer_locators["locators<br/>[Component, in part 1]"]
+    importer_precheck["precheck<br/>[Component, in part 1]"]
+    importer_addresses["addresses<br/>[Component, in part 1]"]
+    importer_masking["masking<br/>[Component, in part 1]"]
+    importer_data_guard["data_guard<br/>[Component, in part 1]"]
+    importer_fingerprint -.-> importer_trees
+    importer_loader -.-> importer_repositories
+    importer_mappers -.-> importer_repositories
+    importer_mappers -.-> importer_shapers
+    importer_memory_store -.-> importer_metrics
+    importer_memory_store -.-> importer_proposals
+    importer_memory_store -.-> importer_repositories
+    importer_mssql_store -.-> importer_proposals
+    importer_mssql_store -.-> importer_repositories
+    importer_mssql_store -.-> importer_schema_tables
+    importer_profiler -.-> importer_trees
+    importer_settings -.-> importer_repositories
+    importer_admin --> importer_fingerprint
+    importer_admin --> importer_mappers
+    importer_admin -.-> importer_schema_tables
+    importer_admin --> importer_settings
+    importer_detector --> importer_fingerprint
+    importer_detector -.-> importer_repositories
+    importer_setup_wizard -.-> importer_db
+    importer_setup_wizard -.-> importer_environment
+    importer_pipeline --> importer_detector
+    importer_pipeline --> importer_loader
+    importer_pipeline -.-> importer_locators
+    importer_pipeline --> importer_mappers
+    importer_pipeline -.-> importer_metrics
+    importer_pipeline -.-> importer_precheck
+    importer_pipeline --> importer_profiler
+    importer_schema_sources --> importer_admin
+    importer_schema_sources -.-> importer_db
+    importer_onboarding -.-> importer_addresses
+    importer_onboarding -.-> importer_masking
+    importer_onboarding --> importer_pipeline
+    importer_onboarding -.-> importer_proposals
+    importer_onboarding --> importer_settings
+    importer_mcp_server --> importer_onboarding
+    importer_mcp_server --> importer_schema_sources
+    importer_cli -.-> importer_data_guard
+    importer_cli --> importer_mcp_server
+    importer_cli --> importer_mssql_store
+    importer_cli --> importer_setup_wizard
+    db_sql_server[("Control database (import_agent_dev)<br/>[Container: SQL Server]<br/>Ledger, registry, versioned<br/>artifacts, raw zone")]
+    importer_mssql_store -->|"Records state and lands rows<br/>in<br/>[pyodbc]"| db_sql_server
+    requestor("Requestor<br/>[Person]<br/>Submits a file with its project,<br/>class and type")
+    requestor -->|"Submits files to<br/>[CLI]"| boundary
+    steward("Data steward<br/>[Person]<br/>Approves mappings; registers<br/>destination schemas")
+    steward -->|"Configures and imports<br/>schemas with<br/>[CLI]"| boundary
+    claude_client["User's Claude client<br/>[Software System]<br/>Claude Code / Desktop: the<br/>onboarding agent (masked data<br/>only)"]
+    claude_client -->|"Calls onboarding tools on<br/>[MCP over stdio]"| boundary
+    file_shares["Shared file locations<br/>[Software System]<br/>SMB / Azure Files shares with<br/>incoming files"]
+    boundary -->|"Reads files from<br/>[SMB]"| file_shares
+    azure_blob["Azure Blob Storage<br/>[Software System]<br/>Blob containers with incoming<br/>files (Entra auth)"]
+    boundary -->|"Reads files from<br/>[azure-storage-blob]"| azure_blob
+    destination_dbs["Destination warehouse databases<br/>[Software System]<br/>Destination operational and<br/>warehouse databases (read only)"]
+    boundary -->|"Reads schemas from (SELECT<br/>only)<br/>[pyodbc]"| destination_dbs
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff
+    classDef container fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef system fill:#1168bd,stroke:#0b4884,color:#ffffff
+    classDef component fill:#85bbf0,stroke:#5d82a8,color:#000000
+    classDef external fill:#999999,stroke:#6b6b6b,color:#ffffff
+    classDef shared fill:#dbe9f6,stroke:#5d82a8,color:#000000,stroke-dasharray:4 3
+    class importer_fingerprint,importer_loader,importer_mappers,importer_memory_store,importer_mssql_store,importer_profiler,importer_settings,importer_admin,importer_detector,importer_setup_wizard,importer_pipeline,importer_schema_sources,importer_onboarding,importer_mcp_server,importer_cli component
+    class importer_trees,importer_repositories,importer_shapers,importer_metrics,importer_proposals,importer_schema_tables,importer_db,importer_environment,importer_locators,importer_precheck,importer_addresses,importer_masking,importer_data_guard shared
+    class db_sql_server container
+    class requestor,steward person
+    class claude_client,file_shares,azure_blob,destination_dbs external
+    style boundary fill:none,stroke:#444444,stroke-dasharray:6 4

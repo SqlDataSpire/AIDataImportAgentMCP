@@ -1,12 +1,13 @@
 {
-  "repository": "DataImportAgent",
+  "repository": "AIDataImportAgentMCP",
   "technology_stack": [
     "Python"
   ],
-  "projects_found": 34,
-  "folders_found": 6,
-  "components_found": 34,
-  "dependencies_found": 123,
+  "projects_found": 36,
+  "inferred_projects": [],
+  "folders_found": 7,
+  "components_found": 36,
+  "dependencies_found": 134,
   "test_projects": [
     "tests"
   ],
@@ -19,15 +20,80 @@
     "importer.config"
   ],
   "dependency_graph_available": true,
+  "status": "ok",
+  "warnings": [
+    {
+      "source": "render_c4",
+      "message": "flow 'process-known-file' (A known file lands (no model)): no evidence and not marked as an assumption",
+      "kind": "model"
+    },
+    {
+      "source": "render_c4",
+      "message": "flow 'onboard-unknown-file' (An unknown file is onboarded with Claude): no evidence and not marked as an assumption",
+      "kind": "model"
+    },
+    {
+      "source": "render_c4",
+      "message": "flow 'import-destination-schemas' (Destination schemas are registered): no evidence and not marked as an assumption",
+      "kind": "model"
+    }
+  ],
+  "skipped_files": [],
   "c4": {
     "containers": 1,
     "data_stores": 1,
     "external_systems": 0,
     "diagrams": [
+      "c4-context",
       "c4-container",
-      "c4-component-data-import-agent"
+      "c4-component-data-import-agent-part1",
+      "c4-component-data-import-agent-part2",
+      "c4-flow-process-known-file",
+      "c4-flow-onboard-unknown-file",
+      "c4-flow-import-destination-schemas"
     ],
-    "model": "facts-only",
-    "model_errors": []
+    "model": "c4-model.json",
+    "model_errors": [],
+    "model_warnings": [
+      "flow 'process-known-file' (A known file lands (no model)): no evidence and not marked as an assumption",
+      "flow 'onboard-unknown-file' (An unknown file is onboarded with Claude): no evidence and not marked as an assumption",
+      "flow 'import-destination-schemas' (Destination schemas are registered): no evidence and not marked as an assumption"
+    ],
+    "model_status": "ok",
+    "drift": [],
+    "svg": {
+      "dependency-graph": {
+        "status": "ok",
+        "message": ""
+      },
+      "c4-context": {
+        "status": "ok",
+        "message": ""
+      },
+      "c4-container": {
+        "status": "ok",
+        "message": ""
+      },
+      "c4-component-data-import-agent-part1": {
+        "status": "ok",
+        "message": ""
+      },
+      "c4-component-data-import-agent-part2": {
+        "status": "ok",
+        "message": ""
+      },
+      "c4-flow-process-known-file": {
+        "status": "ok",
+        "message": ""
+      },
+      "c4-flow-onboard-unknown-file": {
+        "status": "ok",
+        "message": ""
+      },
+      "c4-flow-import-destination-schemas": {
+        "status": "ok",
+        "message": ""
+      }
+    }
   }
 }

@@ -1,3 +1,6 @@
+---
+title: "Destination schemas are registered"
+---
 sequenceDiagram
     actor steward as Data steward
     participant data_import_agent as importer (CLI + MCP server)
@@ -7,7 +10,7 @@ sequenceDiagram
     participant importer_admin as importer.admin
     participant importer_mssql_store as importer.mssql_store
     participant db_sql_server as Control database (import_agent_dev)
-    steward->>data_import_agent: importer schema import 'NPVCS.*.*' [CLI]
+    steward->>data_import_agent: importer schema import "WAREHOUSE.*.*" [CLI]
     importer_cli->>importer_schema_sources: import_schemas()
     importer_schema_sources->>destination_dbs: List tables and columns (SELECT-only engine) [INFORMATION_SCHEMA]
     importer_schema_sources->>importer_admin: register_schema() per table

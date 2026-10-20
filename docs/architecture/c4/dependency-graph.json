@@ -26,7 +26,8 @@
     "importer.readers",
     "importer.schema_sources",
     "importer.schema_tables",
-    "importer.settings"
+    "importer.settings",
+    "importer.setup_wizard"
   ],
   "importer.config": [],
   "importer.data_guard": [],
@@ -44,7 +45,8 @@
   ],
   "importer.fingerprint": [
     "importer.models",
-    "importer.readers"
+    "importer.readers",
+    "importer.trees"
   ],
   "importer.loader": [
     "importer.models",
@@ -93,7 +95,7 @@
     "importer.readers",
     "importer.repositories",
     "importer.settings",
-    "importer.shapers"
+    "importer.trees"
   ],
   "importer.pipeline": [
     "importer.detector",
@@ -105,14 +107,16 @@
     "importer.precheck",
     "importer.profiler",
     "importer.readers",
-    "importer.repositories"
+    "importer.repositories",
+    "importer.trees"
   ],
   "importer.precheck": [
     "importer.models"
   ],
   "importer.profiler": [
     "importer.models",
-    "importer.readers"
+    "importer.readers",
+    "importer.trees"
   ],
   "importer.proposals": [],
   "importer.readers": [
@@ -144,7 +148,16 @@
     "importer.models",
     "importer.repositories"
   ],
+  "importer.setup_wizard": [
+    "importer.config",
+    "importer.db",
+    "importer.environment",
+    "importer.schema_tables"
+  ],
   "importer.shapers": [
+    "importer.readers"
+  ],
+  "importer.trees": [
     "importer.readers"
   ],
   "tests": [
@@ -178,6 +191,8 @@
     "importer.schema_sources",
     "importer.schema_tables",
     "importer.settings",
-    "importer.shapers"
+    "importer.setup_wizard",
+    "importer.shapers",
+    "importer.trees"
   ]
 }

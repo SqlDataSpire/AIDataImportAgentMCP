@@ -1,0 +1,54 @@
+---
+title: "importer (CLI + MCP server) · importer.mssql_store"
+config:
+  class:
+    hideEmptyMembersBox: true
+---
+classDiagram
+    direction LR
+    class MssqlStore {
+        +transaction() Iterator[MssqlTx]
+    }
+    class MssqlTx
+    class MssqlLedger {
+        +create_or_get(idempotency_key, source, original_filename, source_path, declared, request_context)
+        +get(file_id)
+        +transition(file_id, src, dst)
+        +begin_reentry(file_id)
+        +set_signature(file_id, signature_id)
+        +set_encoding(file_id, encoding)
+        +set_error(file_id, message)
+        +record_metrics(file_id, rows_total, rows_landed, rows_rejected, percent_parsed, percent_loaded)
+        …(1 more)
+    }
+    class MssqlRawZone {
+        +ensure_tables(schema_id, columns)
+        +clear_stage(file_id, target)
+        +stage_batch(target, rows)
+        +promote(file_id, target)
+        +count_landed(file_id, target)
+    }
+    class MssqlRegistry {
+        +lookup(fingerprint, xml_namespace)
+        +get(signature_id)
+        +find_active_by_physical_part(physical_part, xml_namespace)
+        +propose(sig, candidates)
+        +list_by_status(status)
+        +set_proposal(signature_id, proposal)
+        +set_observed(signature_id, observed)
+        +activate(signature_id, mapper_version_id, approved_by)
+        …(1 more)
+    }
+    class MssqlRejectStore {
+        +add(reject) bool
+        +open_rejects_for_schema(schema_id) list[Reject]
+        +mark_reclaimed(file_id, row_identity) bool
+        +all_rejects() list[Reject]
+        +count_open_for_file(file_id) int
+    }
+    style MssqlStore fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MssqlTx fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MssqlLedger fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MssqlRawZone fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MssqlRegistry fill:#85bbf0,stroke:#5d82a8,color:#000000
+    style MssqlRejectStore fill:#85bbf0,stroke:#5d82a8,color:#000000

@@ -1,3 +1,6 @@
+---
+title: "AIDataImportAgentMCP · Project dependency graph"
+---
 graph TD
     tests["tests"]
     subgraph group_src["src"]
@@ -33,7 +36,9 @@ graph TD
         importer_schema_sources["importer.schema_sources"]
         importer_schema_tables["importer.schema_tables"]
         importer_settings["importer.settings"]
+        importer_setup_wizard["importer.setup_wizard"]
         importer_shapers["importer.shapers"]
+        importer_trees["importer.trees"]
     end
     importer_admin --> importer_addresses
     importer_admin --> importer_fingerprint
@@ -58,6 +63,7 @@ graph TD
     importer_cli --> importer_schema_sources
     importer_cli --> importer_schema_tables
     importer_cli --> importer_settings
+    importer_cli --> importer_setup_wizard
     importer_db --> importer_config
     importer_detector --> importer_fingerprint
     importer_detector --> importer_models
@@ -66,6 +72,7 @@ graph TD
     importer_environment --> importer_schema_tables
     importer_fingerprint --> importer_models
     importer_fingerprint --> importer_readers
+    importer_fingerprint --> importer_trees
     importer_loader --> importer_models
     importer_loader --> importer_repositories
     importer_mappers --> importer_models
@@ -98,7 +105,7 @@ graph TD
     importer_onboarding --> importer_readers
     importer_onboarding --> importer_repositories
     importer_onboarding --> importer_settings
-    importer_onboarding --> importer_shapers
+    importer_onboarding --> importer_trees
     importer_pipeline --> importer_detector
     importer_pipeline --> importer_loader
     importer_pipeline --> importer_locators
@@ -109,9 +116,11 @@ graph TD
     importer_pipeline --> importer_profiler
     importer_pipeline --> importer_readers
     importer_pipeline --> importer_repositories
+    importer_pipeline --> importer_trees
     importer_precheck --> importer_models
     importer_profiler --> importer_models
     importer_profiler --> importer_readers
+    importer_profiler --> importer_trees
     importer_readers --> importer_models
     importer_reclaim --> importer_models
     importer_reclaim --> importer_reject_store
@@ -126,7 +135,12 @@ graph TD
     importer_schema_tables --> importer_addresses
     importer_settings --> importer_models
     importer_settings --> importer_repositories
+    importer_setup_wizard --> importer_config
+    importer_setup_wizard --> importer_db
+    importer_setup_wizard --> importer_environment
+    importer_setup_wizard --> importer_schema_tables
     importer_shapers --> importer_readers
+    importer_trees --> importer_readers
     tests --> importer_addresses
     tests --> importer_admin
     tests --> importer_cli
@@ -157,4 +171,6 @@ graph TD
     tests --> importer_schema_sources
     tests --> importer_schema_tables
     tests --> importer_settings
+    tests --> importer_setup_wizard
     tests --> importer_shapers
+    tests --> importer_trees
