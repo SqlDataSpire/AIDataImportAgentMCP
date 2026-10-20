@@ -1,0 +1,344 @@
+{
+  "system": {
+    "name": "Data Agent: Importer",
+    "description": "Lands incoming files into a raw zone; Claude-assisted onboarding for unknown files"
+  },
+  "people": [
+    {
+      "id": "requestor",
+      "name": "Requestor",
+      "description": "Submits a file with its project, class and type",
+      "evidence": [
+        "src/importer/cli.py:224"
+      ]
+    },
+    {
+      "id": "steward",
+      "name": "Data steward",
+      "description": "Approves mappings; registers destination schemas",
+      "evidence": [
+        "README.md:105",
+        "src/importer/mcp_server.py:190"
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "id": "data-import-agent",
+      "name": "importer (CLI + MCP server)",
+      "technology": "Python 3.14, SQLAlchemy Core, pyodbc, MCP SDK",
+      "description": "The importer CLI and the importer mcp server",
+      "evidence": [
+        "pyproject.toml",
+        "src/importer/cli.py:244"
+      ]
+    },
+    {
+      "id": "db-sql-server",
+      "name": "Control database (import_agent_dev)",
+      "technology": "SQL Server",
+      "type": "database",
+      "description": "Ledger, registry, versioned artifacts, raw zone",
+      "evidence": [
+        "sql/001_schema.sql:62",
+        "src/importer/mssql_store.py:13"
+      ]
+    },
+    {
+      "id": "destination-dbs",
+      "name": "Destination warehouse databases",
+      "technology": "SQL Server (CSSNPI)",
+      "type": "database",
+      "external": true,
+      "description": "NPVCS, JSON_INDEX, RX, NPIDATA_IMPORT, ZIPCODE (read only)",
+      "evidence": [
+        "src/importer/db.py:106",
+        "src/importer/schema_sources.py:36"
+      ]
+    }
+  ],
+  "external_systems": [
+    {
+      "id": "claude-client",
+      "name": "User's Claude client",
+      "description": "Claude Code / Desktop: the onboarding agent (masked data only)",
+      "evidence": [
+        ".mcp.json:3",
+        "src/importer/mcp_server.py:35"
+      ]
+    },
+    {
+      "id": "file-shares",
+      "name": "Shared file locations",
+      "description": "SMB / Azure Files shares with incoming files",
+      "evidence": [
+        "src/importer/locators.py:66"
+      ]
+    },
+    {
+      "id": "azure-blob",
+      "name": "Azure Blob Storage",
+      "description": "Blob containers with incoming files (Entra auth)",
+      "evidence": [
+        "src/importer/locators.py:82"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from": "requestor",
+      "to": "data-import-agent",
+      "description": "Submits files to",
+      "technology": "CLI"
+    },
+    {
+      "from": "steward",
+      "to": "claude-client",
+      "description": "Approves mappings in"
+    },
+    {
+      "from": "steward",
+      "to": "data-import-agent",
+      "description": "Configures and imports schemas with",
+      "technology": "CLI"
+    },
+    {
+      "from": "claude-client",
+      "to": "data-import-agent",
+      "description": "Calls onboarding tools on",
+      "technology": "MCP over stdio"
+    },
+    {
+      "from": "data-import-agent",
+      "to": "file-shares",
+      "description": "Reads files from",
+      "technology": "SMB"
+    },
+    {
+      "from": "data-import-agent",
+      "to": "azure-blob",
+      "description": "Reads files from",
+      "technology": "azure-storage-blob"
+    },
+    {
+      "from": "data-import-agent",
+      "to": "db-sql-server",
+      "description": "Records state and lands rows in",
+      "technology": "pyodbc"
+    },
+    {
+      "from": "data-import-agent",
+      "to": "destination-dbs",
+      "description": "Reads schemas from (SELECT only)",
+      "technology": "pyodbc"
+    }
+  ],
+  "components": {
+    "data-import-agent": {
+      "importer.cli": "The importer command line: process, retry, pending, config, schema import, db init/rebuild, mcp",
+      "importer.mcp_server": "MCP tools and the onboard prompt for the user's Claude client; sign-off gate on accept_mapping / register_schema",
+      "importer.onboarding": "Confirm-and-bind: reuse / exact / fallback drafts, previews, submit, reject, accept and bind",
+      "importer.masking": "Reduces every row-derived value to its shape before it can leave (letter a, digit 9)",
+      "importer.schema_sources": "Destination schema import, live (read-only) or from a column file",
+      "importer.admin": "Registration helpers: schemas, mappers, signatures",
+      "importer.pipeline": "The ledger state machine: process() and retry()",
+      "importer.locators": "Reads files from SMB, Azure Files or Blob locators; verifies the SHA-256",
+      "importer.detector": "Signature lookup in the registry (model-free)",
+      "importer.profiler": "Miss profiling and 'looks like' candidates",
+      "importer.mappers": "Declarative specs, shapers and hash-pinned plugins extract rows",
+      "importer.readers": "Readers for delimited, Excel, JSON, NDJSON and XML",
+      "importer.loader": "Stages rows with bisection, then promotes them transactionally",
+      "importer.mssql_store": "SQL Server repositories: ledger, registry, artifacts, rejects, audit, raw zone",
+      "importer.memory_store": "In-memory repositories used by the unit tests",
+      "importer.settings": "Shared settings stored as a versioned config artifact",
+      "importer.environment": "DEV/PROD marker and the DEV guard",
+      "importer.data_guard": "Claude Code hook asking permission before any direct read of file contents",
+      "importer.metrics": "percent_parsed / percent_loaded with the monotonic floor (invariant #1)",
+      "importer.reclaim": "Idempotent reclaim of rejects (invariant #2)",
+      "importer.models": "Statuses, row types and results shared by every layer"
+    }
+  },
+  "flows": [
+    {
+      "id": "process-known-file",
+      "name": "A known file lands (no model)",
+      "description": "importer process on a file whose signature is registered.",
+      "steps": [
+        {
+          "from": "requestor",
+          "to": "data-import-agent",
+          "description": "importer process <locator> --project --class --type",
+          "technology": "CLI"
+        },
+        {
+          "from": "importer.cli",
+          "to": "importer.pipeline",
+          "description": "process()"
+        },
+        {
+          "from": "importer.pipeline",
+          "to": "importer.locators",
+          "description": "Read the file and hash it"
+        },
+        {
+          "from": "importer.locators",
+          "to": "file-shares",
+          "description": "Read bytes",
+          "technology": "SMB"
+        },
+        {
+          "from": "importer.pipeline",
+          "to": "importer.detector",
+          "description": "Look up the signature (hit)"
+        },
+        {
+          "from": "importer.pipeline",
+          "to": "importer.mappers",
+          "description": "Extract land / reject rows"
+        },
+        {
+          "from": "importer.pipeline",
+          "to": "importer.loader",
+          "description": "Stage, then promote"
+        },
+        {
+          "from": "importer.loader",
+          "to": "importer.mssql_store",
+          "description": "Stage batches; promote to raw in one transaction"
+        },
+        {
+          "from": "importer.mssql_store",
+          "to": "db-sql-server",
+          "description": "Raw rows, ledger metrics",
+          "technology": "pyodbc"
+        },
+        {
+          "from": "data-import-agent",
+          "to": "requestor",
+          "description": "FileResult with percent_loaded",
+          "reply": true
+        }
+      ]
+    },
+    {
+      "id": "onboard-unknown-file",
+      "name": "An unknown file is onboarded with Claude",
+      "description": "The file was quarantined with a 'looks like' proposal; the steward maps it in a Claude session.",
+      "steps": [
+        {
+          "from": "steward",
+          "to": "claude-client",
+          "description": "/mcp__importer__onboard"
+        },
+        {
+          "from": "claude-client",
+          "to": "importer.mcp_server",
+          "description": "list_pending, get_file_profile, get_prior_mappings",
+          "technology": "MCP"
+        },
+        {
+          "from": "importer.mcp_server",
+          "to": "importer.onboarding",
+          "description": "Profile, candidates, deterministic draft"
+        },
+        {
+          "from": "claude-client",
+          "to": "importer.mcp_server",
+          "description": "preview_mapping, submit_mapping (draft spec)",
+          "technology": "MCP"
+        },
+        {
+          "from": "importer.onboarding",
+          "to": "importer.masking",
+          "description": "Mask preview sample values"
+        },
+        {
+          "from": "importer.mcp_server",
+          "to": "claude-client",
+          "description": "Review table (metadata and masked shapes only)",
+          "reply": true
+        },
+        {
+          "from": "steward",
+          "to": "claude-client",
+          "description": "Approves accept_mapping",
+          "note": "the sign-off gate"
+        },
+        {
+          "from": "claude-client",
+          "to": "importer.mcp_server",
+          "description": "accept_mapping (client asks the steward first)",
+          "technology": "MCP"
+        },
+        {
+          "from": "importer.mcp_server",
+          "to": "importer.onboarding",
+          "description": "accept()"
+        },
+        {
+          "from": "importer.onboarding",
+          "to": "importer.mssql_store",
+          "description": "Bind signature to mapper (one transaction)"
+        },
+        {
+          "from": "importer.onboarding",
+          "to": "importer.pipeline",
+          "description": "retry() every waiting file"
+        },
+        {
+          "from": "importer.mcp_server",
+          "to": "claude-client",
+          "description": "Each waiting file's status and percent_loaded",
+          "reply": true
+        }
+      ]
+    },
+    {
+      "id": "import-destination-schemas",
+      "name": "Destination schemas are registered",
+      "description": "importer schema import \"NPVCS.*.*\"; destinations are only read.",
+      "steps": [
+        {
+          "from": "steward",
+          "to": "data-import-agent",
+          "description": "importer schema import \"NPVCS.*.*\"",
+          "technology": "CLI"
+        },
+        {
+          "from": "importer.cli",
+          "to": "importer.schema_sources",
+          "description": "import_schemas()"
+        },
+        {
+          "from": "importer.schema_sources",
+          "to": "destination-dbs",
+          "description": "List tables and columns (SELECT-only engine)",
+          "technology": "INFORMATION_SCHEMA"
+        },
+        {
+          "from": "importer.schema_sources",
+          "to": "importer.admin",
+          "description": "register_schema() per table"
+        },
+        {
+          "from": "importer.admin",
+          "to": "importer.mssql_store",
+          "description": "New schema version (never edited in place)"
+        },
+        {
+          "from": "importer.mssql_store",
+          "to": "db-sql-server",
+          "description": "artifact_versions rows",
+          "technology": "pyodbc"
+        },
+        {
+          "from": "data-import-agent",
+          "to": "steward",
+          "description": "Added / unchanged / changed / refused report",
+          "reply": true
+        }
+      ]
+    }
+  ],
+  "excluded": []
+}

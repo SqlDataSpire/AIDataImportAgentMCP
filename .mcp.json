@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "importer": {
+      "command": ".venv/Scripts/python",
+      "args": ["-m", "importer.cli", "mcp"]
+    }
+  }
+}

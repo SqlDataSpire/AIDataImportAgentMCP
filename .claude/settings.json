@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__importer__list_pending",
+      "mcp__importer__get_file_profile",
+      "mcp__importer__get_tree",
+      "mcp__importer__search_schemas",
+      "mcp__importer__get_schema",
+      "mcp__importer__get_prior_mappings",
+      "mcp__importer__get_samples",
+      "mcp__importer__get_spec_reference",
+      "mcp__importer__preview_mapping",
+      "mcp__importer__submit_mapping",
+      "mcp__importer__reject_mapping"
+    ],
+    "ask": [
+      "mcp__importer__accept_mapping",
+      "mcp__importer__register_schema"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep|Glob|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.venv/Scripts/python.exe\" -m importer.data_guard",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

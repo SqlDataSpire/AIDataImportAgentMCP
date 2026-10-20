@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.env
+database.env
+scratch/
+.coverage
+htmlcov/
+.vscode/
+.idea/
+
+# Claude Desktop export archive
+data-import-agent.zip

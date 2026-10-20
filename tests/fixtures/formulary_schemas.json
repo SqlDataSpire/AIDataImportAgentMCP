@@ -1,0 +1,5 @@
+{
+  "app_db.xml.formulary_benefit_definition": ["fileid", "binder_name", "run_id", "templateVersion", "issuer_id", "state_code", "formulary_id", "drug_list_id", "num_of_tiers", "drug_tier_id", "one_month", "three_month_in", "three_month_out", "cost_coverage_type", "prescription_period", "copay", "coin"],
+  "app_db.xml.formulary_tier_definition": ["fileid", "binder_name", "run_id", "templateVersion", "issuer_id", "state_code", "drug_list_id", "tier_level", "tier_type"],
+  "app_db.xml.formulary_drug_list": ["fileid", "binder_name", "run_id", "templateVersion", "issuer_id", "state_code", "drug_list_id", "rxcui", "tier_level", "authorizationRequired", "stepTherapyRequired"]
+}

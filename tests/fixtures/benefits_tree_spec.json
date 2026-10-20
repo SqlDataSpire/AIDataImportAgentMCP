@@ -1,0 +1,34 @@
+{
+  "kind": "tree",
+  "namespaces": {"x": "http://vo.ffe.cms.hhs.gov"},
+  "value_child": "x:cellValue",
+  "column": [
+    {"name": "fileid", "path": "$file_id"},
+    {"name": "binder_name", "path": "$context.binder_name"},
+    {"name": "run_id", "path": "$context.run_id"}
+  ],
+  "select": [
+    {"forEach": "x:packagesList/x:packages",
+     "column": [{"name": "packageid", "path": "$identity"}],
+     "select": [
+       {"forEach": "x:header", "table": "app_db.xml.package", "leaves": "auto",
+        "column": [{"name": "packagename", "path": "x:issuerId/@cellLocation"}]},
+       {"forEach": "x:benefitsList/x:benefits", "table": "app_db.xml.benefits", "leaves": "auto"},
+       {"forEach": "x:plansList/x:plans",
+        "select": [
+          {"forEach": "x:planAttributes", "table": "app_db.xml.planattributes", "leaves": "auto"},
+          {"forEach": "x:costShareVariancesList/x:costShareVariance", "table": "app_db.xml.costsharevariance",
+           "leaves": "auto", "column": [{"name": "costsharevarianceid", "path": "$identity"}],
+           "select": [
+             {"forEach": "x:sbc", "table": "app_db.xml.sbc", "leaves": "auto"},
+             {"forEach": "x:hsa", "table": "app_db.xml.hsa", "leaves": "auto"},
+             {"forEach": "x:url", "table": "app_db.xml.url", "leaves": "auto"},
+             {"forEach": "x:avCalculator", "table": "app_db.xml.avcalculator", "leaves": "auto"},
+             {"forEach": "x:moopList/x:moop", "table": "app_db.xml.mooplist", "leaves": "auto"},
+             {"forEach": "x:planDeductibleList/x:planDeductible", "table": "app_db.xml.plandeductiblelist", "leaves": "auto"},
+             {"forEach": "x:serviceVisitList/x:serviceVisit", "table": "app_db.xml.servicevisitlist", "leaves": "auto"}
+           ]}
+        ]}
+     ]}
+  ]
+}

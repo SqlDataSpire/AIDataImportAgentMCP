@@ -1,0 +1,160 @@
+graph TD
+    tests["tests"]
+    subgraph group_src["src"]
+        importer_addresses["importer.addresses"]
+        importer_admin["importer.admin"]
+        importer_agent["importer.agent"]
+        importer_cli["importer.cli"]
+        importer_config["importer.config"]
+        importer_data_guard["importer.data_guard"]
+        importer_db["importer.db"]
+        importer_detector["importer.detector"]
+        importer_environment["importer.environment"]
+        importer_fingerprint["importer.fingerprint"]
+        importer_loader["importer.loader"]
+        importer_locators["importer.locators"]
+        importer_mappers["importer.mappers"]
+        importer_masking["importer.masking"]
+        importer_mcp_server["importer.mcp_server"]
+        importer_memory_store["importer.memory_store"]
+        importer_metrics["importer.metrics"]
+        importer_models["importer.models"]
+        importer_mssql_store["importer.mssql_store"]
+        importer_onboarding["importer.onboarding"]
+        importer_pipeline["importer.pipeline"]
+        importer_precheck["importer.precheck"]
+        importer_profiler["importer.profiler"]
+        importer_proposals["importer.proposals"]
+        importer_readers["importer.readers"]
+        importer_reclaim["importer.reclaim"]
+        importer_reject_store["importer.reject_store"]
+        importer_repositories["importer.repositories"]
+        importer_rules["importer.rules"]
+        importer_schema_sources["importer.schema_sources"]
+        importer_schema_tables["importer.schema_tables"]
+        importer_settings["importer.settings"]
+        importer_shapers["importer.shapers"]
+    end
+    importer_admin --> importer_addresses
+    importer_admin --> importer_fingerprint
+    importer_admin --> importer_mappers
+    importer_admin --> importer_models
+    importer_admin --> importer_readers
+    importer_admin --> importer_repositories
+    importer_admin --> importer_schema_tables
+    importer_admin --> importer_settings
+    importer_cli --> importer_admin
+    importer_cli --> importer_config
+    importer_cli --> importer_data_guard
+    importer_cli --> importer_db
+    importer_cli --> importer_environment
+    importer_cli --> importer_mappers
+    importer_cli --> importer_mcp_server
+    importer_cli --> importer_models
+    importer_cli --> importer_mssql_store
+    importer_cli --> importer_onboarding
+    importer_cli --> importer_pipeline
+    importer_cli --> importer_readers
+    importer_cli --> importer_schema_sources
+    importer_cli --> importer_schema_tables
+    importer_cli --> importer_settings
+    importer_db --> importer_config
+    importer_detector --> importer_fingerprint
+    importer_detector --> importer_models
+    importer_detector --> importer_readers
+    importer_detector --> importer_repositories
+    importer_environment --> importer_schema_tables
+    importer_fingerprint --> importer_models
+    importer_fingerprint --> importer_readers
+    importer_loader --> importer_models
+    importer_loader --> importer_repositories
+    importer_mappers --> importer_models
+    importer_mappers --> importer_readers
+    importer_mappers --> importer_repositories
+    importer_mappers --> importer_shapers
+    importer_mcp_server --> importer_addresses
+    importer_mcp_server --> importer_admin
+    importer_mcp_server --> importer_locators
+    importer_mcp_server --> importer_onboarding
+    importer_mcp_server --> importer_schema_sources
+    importer_memory_store --> importer_metrics
+    importer_memory_store --> importer_models
+    importer_memory_store --> importer_proposals
+    importer_memory_store --> importer_reject_store
+    importer_memory_store --> importer_repositories
+    importer_mssql_store --> importer_addresses
+    importer_mssql_store --> importer_models
+    importer_mssql_store --> importer_proposals
+    importer_mssql_store --> importer_repositories
+    importer_mssql_store --> importer_schema_tables
+    importer_onboarding --> importer_addresses
+    importer_onboarding --> importer_locators
+    importer_onboarding --> importer_mappers
+    importer_onboarding --> importer_masking
+    importer_onboarding --> importer_models
+    importer_onboarding --> importer_pipeline
+    importer_onboarding --> importer_profiler
+    importer_onboarding --> importer_proposals
+    importer_onboarding --> importer_readers
+    importer_onboarding --> importer_repositories
+    importer_onboarding --> importer_settings
+    importer_onboarding --> importer_shapers
+    importer_pipeline --> importer_detector
+    importer_pipeline --> importer_loader
+    importer_pipeline --> importer_locators
+    importer_pipeline --> importer_mappers
+    importer_pipeline --> importer_metrics
+    importer_pipeline --> importer_models
+    importer_pipeline --> importer_precheck
+    importer_pipeline --> importer_profiler
+    importer_pipeline --> importer_readers
+    importer_pipeline --> importer_repositories
+    importer_precheck --> importer_models
+    importer_profiler --> importer_models
+    importer_profiler --> importer_readers
+    importer_readers --> importer_models
+    importer_reclaim --> importer_models
+    importer_reclaim --> importer_reject_store
+    importer_reclaim --> importer_rules
+    importer_reject_store --> importer_models
+    importer_repositories --> importer_models
+    importer_repositories --> importer_reject_store
+    importer_schema_sources --> importer_addresses
+    importer_schema_sources --> importer_admin
+    importer_schema_sources --> importer_db
+    importer_schema_sources --> importer_settings
+    importer_schema_tables --> importer_addresses
+    importer_settings --> importer_models
+    importer_settings --> importer_repositories
+    importer_shapers --> importer_readers
+    tests --> importer_addresses
+    tests --> importer_admin
+    tests --> importer_cli
+    tests --> importer_data_guard
+    tests --> importer_db
+    tests --> importer_detector
+    tests --> importer_environment
+    tests --> importer_fingerprint
+    tests --> importer_loader
+    tests --> importer_locators
+    tests --> importer_mappers
+    tests --> importer_masking
+    tests --> importer_mcp_server
+    tests --> importer_memory_store
+    tests --> importer_metrics
+    tests --> importer_models
+    tests --> importer_mssql_store
+    tests --> importer_onboarding
+    tests --> importer_pipeline
+    tests --> importer_precheck
+    tests --> importer_profiler
+    tests --> importer_proposals
+    tests --> importer_readers
+    tests --> importer_reclaim
+    tests --> importer_reject_store
+    tests --> importer_repositories
+    tests --> importer_rules
+    tests --> importer_schema_sources
+    tests --> importer_schema_tables
+    tests --> importer_settings
+    tests --> importer_shapers

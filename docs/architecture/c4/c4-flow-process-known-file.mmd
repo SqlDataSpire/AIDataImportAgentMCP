@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor requestor as Requestor
+    participant data_import_agent as importer (CLI + MCP server)
+    participant importer_cli as importer.cli
+    participant importer_pipeline as importer.pipeline
+    participant importer_locators as importer.locators
+    participant file_shares as Shared file locations
+    participant importer_detector as importer.detector
+    participant importer_mappers as importer.mappers
+    participant importer_loader as importer.loader
+    participant importer_mssql_store as importer.mssql_store
+    participant db_sql_server as Control database (import_agent_dev)
+    requestor->>data_import_agent: importer process ‹locator› --project --class --type [CLI]
+    importer_cli->>importer_pipeline: process()
+    importer_pipeline->>importer_locators: Read the file and hash it
+    importer_locators->>file_shares: Read bytes [SMB]
+    importer_pipeline->>importer_detector: Look up the signature (hit)
+    importer_pipeline->>importer_mappers: Extract land / reject rows
+    importer_pipeline->>importer_loader: Stage, then promote
+    importer_loader->>importer_mssql_store: Stage batches#59; promote to raw in one transaction
+    importer_mssql_store->>db_sql_server: Raw rows, ledger metrics [pyodbc]
+    data_import_agent-->>requestor: FileResult with percent_loaded

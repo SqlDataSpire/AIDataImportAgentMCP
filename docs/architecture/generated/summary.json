@@ -1,0 +1,22 @@
+{
+  "repository": "DataImportAgent",
+  "technology_stack": [
+    "Python"
+  ],
+  "projects_found": 34,
+  "folders_found": 6,
+  "components_found": 34,
+  "dependencies_found": 123,
+  "test_projects": [
+    "tests"
+  ],
+  "orphan_projects": [],
+  "duplicate_project_names": [],
+  "unresolved_references": [],
+  "cycles": [],
+  "untested_projects": [
+    "importer.agent",
+    "importer.config"
+  ],
+  "dependency_graph_available": true
+}

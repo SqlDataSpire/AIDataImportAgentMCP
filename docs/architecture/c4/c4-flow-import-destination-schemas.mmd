@@ -1,0 +1,16 @@
+sequenceDiagram
+    actor steward as Data steward
+    participant data_import_agent as importer (CLI + MCP server)
+    participant importer_cli as importer.cli
+    participant importer_schema_sources as importer.schema_sources
+    participant destination_dbs as Destination warehouse databases
+    participant importer_admin as importer.admin
+    participant importer_mssql_store as importer.mssql_store
+    participant db_sql_server as Control database (import_agent_dev)
+    steward->>data_import_agent: importer schema import 'NPVCS.*.*' [CLI]
+    importer_cli->>importer_schema_sources: import_schemas()
+    importer_schema_sources->>destination_dbs: List tables and columns (SELECT-only engine) [INFORMATION_SCHEMA]
+    importer_schema_sources->>importer_admin: register_schema() per table
+    importer_admin->>importer_mssql_store: New schema version (never edited in place)
+    importer_mssql_store->>db_sql_server: artifact_versions rows [pyodbc]
+    data_import_agent-->>steward: Added / unchanged / changed / refused report

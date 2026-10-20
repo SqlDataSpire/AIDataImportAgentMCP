@@ -1,0 +1,371 @@
+{
+  "repository": "DataImportAgent",
+  "containers": [
+    {
+      "id": "data-import-agent",
+      "name": "data-import-agent",
+      "kind": "mcp-server + cli",
+      "technology": "Python, MCP SDK, CLI",
+      "path": ".",
+      "evidence": [
+        "pyproject.toml: MCP SDK, CLI"
+      ],
+      "components": {
+        "nodes": {
+          "importer.addresses": {
+            "path": "src/importer/addresses.py",
+            "group": "src"
+          },
+          "importer.admin": {
+            "path": "src/importer/admin.py",
+            "group": "src"
+          },
+          "importer.agent": {
+            "path": "src/importer/agent",
+            "group": "src"
+          },
+          "importer.cli": {
+            "path": "src/importer/cli.py",
+            "group": "src"
+          },
+          "importer.config": {
+            "path": "src/importer/config.py",
+            "group": "src"
+          },
+          "importer.data_guard": {
+            "path": "src/importer/data_guard.py",
+            "group": "src"
+          },
+          "importer.db": {
+            "path": "src/importer/db.py",
+            "group": "src"
+          },
+          "importer.detector": {
+            "path": "src/importer/detector.py",
+            "group": "src"
+          },
+          "importer.environment": {
+            "path": "src/importer/environment.py",
+            "group": "src"
+          },
+          "importer.fingerprint": {
+            "path": "src/importer/fingerprint.py",
+            "group": "src"
+          },
+          "importer.loader": {
+            "path": "src/importer/loader.py",
+            "group": "src"
+          },
+          "importer.locators": {
+            "path": "src/importer/locators.py",
+            "group": "src"
+          },
+          "importer.mappers": {
+            "path": "src/importer/mappers",
+            "group": "src"
+          },
+          "importer.masking": {
+            "path": "src/importer/masking.py",
+            "group": "src"
+          },
+          "importer.mcp_server": {
+            "path": "src/importer/mcp_server.py",
+            "group": "src"
+          },
+          "importer.memory_store": {
+            "path": "src/importer/memory_store.py",
+            "group": "src"
+          },
+          "importer.metrics": {
+            "path": "src/importer/metrics.py",
+            "group": "src"
+          },
+          "importer.models": {
+            "path": "src/importer/models.py",
+            "group": "src"
+          },
+          "importer.mssql_store": {
+            "path": "src/importer/mssql_store.py",
+            "group": "src"
+          },
+          "importer.onboarding": {
+            "path": "src/importer/onboarding.py",
+            "group": "src"
+          },
+          "importer.pipeline": {
+            "path": "src/importer/pipeline.py",
+            "group": "src"
+          },
+          "importer.precheck": {
+            "path": "src/importer/precheck.py",
+            "group": "src"
+          },
+          "importer.profiler": {
+            "path": "src/importer/profiler.py",
+            "group": "src"
+          },
+          "importer.proposals": {
+            "path": "src/importer/proposals.py",
+            "group": "src"
+          },
+          "importer.readers": {
+            "path": "src/importer/readers",
+            "group": "src"
+          },
+          "importer.reclaim": {
+            "path": "src/importer/reclaim.py",
+            "group": "src"
+          },
+          "importer.reject_store": {
+            "path": "src/importer/reject_store.py",
+            "group": "src"
+          },
+          "importer.repositories": {
+            "path": "src/importer/repositories.py",
+            "group": "src"
+          },
+          "importer.rules": {
+            "path": "src/importer/rules",
+            "group": "src"
+          },
+          "importer.schema_sources": {
+            "path": "src/importer/schema_sources.py",
+            "group": "src"
+          },
+          "importer.schema_tables": {
+            "path": "src/importer/schema_tables.py",
+            "group": "src"
+          },
+          "importer.settings": {
+            "path": "src/importer/settings.py",
+            "group": "src"
+          },
+          "importer.shapers": {
+            "path": "src/importer/shapers",
+            "group": "src"
+          }
+        },
+        "edges": {
+          "importer.addresses": [],
+          "importer.admin": [
+            "importer.addresses",
+            "importer.fingerprint",
+            "importer.mappers",
+            "importer.models",
+            "importer.readers",
+            "importer.repositories",
+            "importer.schema_tables",
+            "importer.settings"
+          ],
+          "importer.agent": [],
+          "importer.cli": [
+            "importer.admin",
+            "importer.config",
+            "importer.data_guard",
+            "importer.db",
+            "importer.environment",
+            "importer.mappers",
+            "importer.mcp_server",
+            "importer.models",
+            "importer.mssql_store",
+            "importer.onboarding",
+            "importer.pipeline",
+            "importer.readers",
+            "importer.schema_sources",
+            "importer.schema_tables",
+            "importer.settings"
+          ],
+          "importer.config": [],
+          "importer.data_guard": [],
+          "importer.db": [
+            "importer.config"
+          ],
+          "importer.detector": [
+            "importer.fingerprint",
+            "importer.models",
+            "importer.readers",
+            "importer.repositories"
+          ],
+          "importer.environment": [
+            "importer.schema_tables"
+          ],
+          "importer.fingerprint": [
+            "importer.models",
+            "importer.readers"
+          ],
+          "importer.loader": [
+            "importer.models",
+            "importer.repositories"
+          ],
+          "importer.locators": [],
+          "importer.mappers": [
+            "importer.models",
+            "importer.readers",
+            "importer.repositories",
+            "importer.shapers"
+          ],
+          "importer.masking": [],
+          "importer.mcp_server": [
+            "importer.addresses",
+            "importer.admin",
+            "importer.locators",
+            "importer.onboarding",
+            "importer.schema_sources"
+          ],
+          "importer.memory_store": [
+            "importer.metrics",
+            "importer.models",
+            "importer.proposals",
+            "importer.reject_store",
+            "importer.repositories"
+          ],
+          "importer.metrics": [],
+          "importer.models": [],
+          "importer.mssql_store": [
+            "importer.addresses",
+            "importer.models",
+            "importer.proposals",
+            "importer.repositories",
+            "importer.schema_tables"
+          ],
+          "importer.onboarding": [
+            "importer.addresses",
+            "importer.locators",
+            "importer.mappers",
+            "importer.masking",
+            "importer.models",
+            "importer.pipeline",
+            "importer.profiler",
+            "importer.proposals",
+            "importer.readers",
+            "importer.repositories",
+            "importer.settings",
+            "importer.shapers"
+          ],
+          "importer.pipeline": [
+            "importer.detector",
+            "importer.loader",
+            "importer.locators",
+            "importer.mappers",
+            "importer.metrics",
+            "importer.models",
+            "importer.precheck",
+            "importer.profiler",
+            "importer.readers",
+            "importer.repositories"
+          ],
+          "importer.precheck": [
+            "importer.models"
+          ],
+          "importer.profiler": [
+            "importer.models",
+            "importer.readers"
+          ],
+          "importer.proposals": [],
+          "importer.readers": [
+            "importer.models"
+          ],
+          "importer.reclaim": [
+            "importer.models",
+            "importer.reject_store",
+            "importer.rules"
+          ],
+          "importer.reject_store": [
+            "importer.models"
+          ],
+          "importer.repositories": [
+            "importer.models",
+            "importer.reject_store"
+          ],
+          "importer.rules": [],
+          "importer.schema_sources": [
+            "importer.addresses",
+            "importer.admin",
+            "importer.db",
+            "importer.settings"
+          ],
+          "importer.schema_tables": [
+            "importer.addresses"
+          ],
+          "importer.settings": [
+            "importer.models",
+            "importer.repositories"
+          ],
+          "importer.shapers": [
+            "importer.readers"
+          ]
+        }
+      },
+      "code_components": null,
+      "inventory": [
+        "Python >=3.11",
+        "Python-DataEngine>=2.4",
+        "sqlalchemy>=2.0",
+        "pyodbc>=5",
+        "lxml>=5",
+        "openpyxl>=3.1",
+        "xlrd>=2.0",
+        "python-dotenv>=1.0",
+        "mcp>=2",
+        "azure-storage-blob>=12.19",
+        "azure-identity>=1.15"
+      ],
+      "compose_services": null
+    }
+  ],
+  "data_stores": [
+    {
+      "id": "db-sql-server",
+      "name": "SQL Server",
+      "technology": "SQL Server",
+      "evidence": [
+        "scripts/spike_fast_executemany.py:13",
+        "src/importer/mssql_store.py:13"
+      ],
+      "used_by": [
+        "data-import-agent"
+      ],
+      "used_by_components": {
+        "data-import-agent": [
+          "importer.mssql_store"
+        ]
+      },
+      "used_by_code": {}
+    }
+  ],
+  "external_systems": [],
+  "relationships": [],
+  "endpoints": [],
+  "deployment": {
+    "compose": [],
+    "dockerfiles": [],
+    "kubernetes": [],
+    "ci": [],
+    "platforms": []
+  },
+  "configuration": {
+    "variables": [
+      {
+        "name": "IMPORTER_DATA_GUARD",
+        "default": null,
+        "sources": [
+          "src/importer/data_guard.py:114"
+        ],
+        "containers": [
+          "data-import-agent"
+        ]
+      },
+      {
+        "name": "IMPORTER_HOME",
+        "default": null,
+        "sources": [
+          "src/importer/config.py:15"
+        ],
+        "containers": [
+          "data-import-agent"
+        ]
+      }
+    ],
+    "files": []
+  }
+}

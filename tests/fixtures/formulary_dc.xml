@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prescriptionDrugTemplateVO xmlns="http://vo.ffe.cms.hhs.gov">
+  <header>
+    <templateVersion>v13.0</templateVersion>
+    <issuerId cellLocation="B2"><cellValue>12345</cellValue></issuerId>
+    <statePostalCode cellLocation="B3"><cellValue>DC</cellValue></statePostalCode>
+  </header>
+  <formularyList>
+    <formularyVO>
+      <formularyID><cellValue>DCF001</cellValue></formularyID>
+      <drugListID><cellValue>1</cellValue></drugListID>
+      <numberTiers><cellValue>2</cellValue></numberTiers>
+      <formularyCostSharingTypeList>
+        <formularyCostSharingTypeVO>
+          <drugTierLevel><cellValue>1</cellValue></drugTierLevel>
+          <oneMonthOutNetworkRetailOfferedIndicator><cellValue>Yes</cellValue></oneMonthOutNetworkRetailOfferedIndicator>
+          <threeMonthInNetworkMailOfferedIndicator><cellValue>Yes</cellValue></threeMonthInNetworkMailOfferedIndicator>
+          <threeMonthOutNetworkMailOfferedIndicator><cellValue>No</cellValue></threeMonthOutNetworkMailOfferedIndicator>
+          <costSharingTypeList>
+            <costSharingTypeVO>
+              <networkCostType>In Network</networkCostType>
+              <drugPrescriptionPeriodType>1 Month</drugPrescriptionPeriodType>
+              <coPayment><cellValue>$10.00</cellValue></coPayment>
+              <coInsurance><cellValue>0%</cellValue></coInsurance>
+            </costSharingTypeVO>
+            <costSharingTypeVO>
+              <networkCostType>Out of Network</networkCostType>
+              <drugPrescriptionPeriodType>1 Month</drugPrescriptionPeriodType>
+              <coPayment><cellValue>$25.00</cellValue></coPayment>
+              <coInsurance><cellValue>0%</cellValue></coInsurance>
+            </costSharingTypeVO>
+          </costSharingTypeList>
+        </formularyCostSharingTypeVO>
+        <formularyCostSharingTypeVO>
+          <drugTierLevel><cellValue>2</cellValue></drugTierLevel>
+          <oneMonthOutNetworkRetailOfferedIndicator><cellValue>Yes</cellValue></oneMonthOutNetworkRetailOfferedIndicator>
+          <threeMonthInNetworkMailOfferedIndicator><cellValue>No</cellValue></threeMonthInNetworkMailOfferedIndicator>
+          <threeMonthOutNetworkMailOfferedIndicator><cellValue>No</cellValue></threeMonthOutNetworkMailOfferedIndicator>
+          <costSharingTypeList>
+            <costSharingTypeVO>
+              <networkCostType>In Network</networkCostType>
+              <drugPrescriptionPeriodType>1 Month</drugPrescriptionPeriodType>
+              <coPayment><cellValue>$40.00</cellValue></coPayment>
+              <coInsurance><cellValue>0%</cellValue></coInsurance>
+            </costSharingTypeVO>
+            <costSharingTypeVO>
+              <networkCostType>Out of Network</networkCostType>
+              <drugPrescriptionPeriodType>1 Month</drugPrescriptionPeriodType>
+              <coPayment><cellValue>No Charge</cellValue></coPayment>
+              <coInsurance><cellValue>40%</cellValue></coInsurance>
+            </costSharingTypeVO>
+          </costSharingTypeList>
+        </formularyCostSharingTypeVO>
+      </formularyCostSharingTypeList>
+    </formularyVO>
+    <formularyVO>
+      <formularyID><cellValue>DCF002</cellValue></formularyID>
+      <drugListID><cellValue>1</cellValue></drugListID>
+      <numberTiers><cellValue>1</cellValue></numberTiers>
+      <formularyCostSharingTypeList>
+        <formularyCostSharingTypeVO>
+          <drugTierLevel><cellValue>1</cellValue></drugTierLevel>
+          <oneMonthOutNetworkRetailOfferedIndicator><cellValue>No</cellValue></oneMonthOutNetworkRetailOfferedIndicator>
+          <threeMonthInNetworkMailOfferedIndicator><cellValue>No</cellValue></threeMonthInNetworkMailOfferedIndicator>
+          <threeMonthOutNetworkMailOfferedIndicator><cellValue>No</cellValue></threeMonthOutNetworkMailOfferedIndicator>
+          <costSharingTypeList>
+            <costSharingTypeVO>
+              <networkCostType>In Network</networkCostType>
+              <drugPrescriptionPeriodType>3 Month</drugPrescriptionPeriodType>
+              <coPayment><cellValue>$5.00</cellValue></coPayment>
+              <coInsurance><cellValue>0%</cellValue></coInsurance>
+            </costSharingTypeVO>
+          </costSharingTypeList>
+        </formularyCostSharingTypeVO>
+      </formularyCostSharingTypeList>
+    </formularyVO>
+  </formularyList>
+  <drugList>
+    <drugListVO>
+      <drugListID><cellValue>1</cellValue></drugListID>
+      <drugTierLevelList>
+        <drugTierLevelVO>
+          <drugTierLevel><cellValue>1</cellValue></drugTierLevel>
+          <drugTierType><cellValue>Generic</cellValue></drugTierType>
+        </drugTierLevelVO>
+        <drugTierLevelVO>
+          <drugTierLevel><cellValue>2</cellValue></drugTierLevel>
+          <drugTierType><cellValue>Preferred Brand</cellValue></drugTierType>
+        </drugTierLevelVO>
+      </drugTierLevelList>
+      <drugVOList>
+        <drugVO>
+          <rXCUI><cellValue>197361</cellValue></rXCUI>
+          <tier><cellValue>1</cellValue></tier>
+          <authorizationRequired><cellValue>No</cellValue></authorizationRequired>
+          <stepTherapyRequired><cellValue>No</cellValue></stepTherapyRequired>
+        </drugVO>
+        <drugVO>
+          <rXCUI><cellValue>314076</cellValue></rXCUI>
+          <tier><cellValue>1</cellValue></tier>
+          <authorizationRequired><cellValue>No</cellValue></authorizationRequired>
+          <stepTherapyRequired><cellValue>No</cellValue></stepTherapyRequired>
+        </drugVO>
+        <drugVO>
+          <rXCUI><cellValue>860975</cellValue></rXCUI>
+          <tier><cellValue>2</cellValue></tier>
+          <authorizationRequired><cellValue>Yes</cellValue></authorizationRequired>
+          <stepTherapyRequired><cellValue>No</cellValue></stepTherapyRequired>
+          <quantityLimit><cellValue>Yes</cellValue></quantityLimit>
+        </drugVO>
+      </drugVOList>
+    </drugListVO>
+  </drugList>
+</prescriptionDrugTemplateVO>

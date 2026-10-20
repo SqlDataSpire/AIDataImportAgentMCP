@@ -1,0 +1,183 @@
+{
+  "importer.addresses": [],
+  "importer.admin": [
+    "importer.addresses",
+    "importer.fingerprint",
+    "importer.mappers",
+    "importer.models",
+    "importer.readers",
+    "importer.repositories",
+    "importer.schema_tables",
+    "importer.settings"
+  ],
+  "importer.agent": [],
+  "importer.cli": [
+    "importer.admin",
+    "importer.config",
+    "importer.data_guard",
+    "importer.db",
+    "importer.environment",
+    "importer.mappers",
+    "importer.mcp_server",
+    "importer.models",
+    "importer.mssql_store",
+    "importer.onboarding",
+    "importer.pipeline",
+    "importer.readers",
+    "importer.schema_sources",
+    "importer.schema_tables",
+    "importer.settings"
+  ],
+  "importer.config": [],
+  "importer.data_guard": [],
+  "importer.db": [
+    "importer.config"
+  ],
+  "importer.detector": [
+    "importer.fingerprint",
+    "importer.models",
+    "importer.readers",
+    "importer.repositories"
+  ],
+  "importer.environment": [
+    "importer.schema_tables"
+  ],
+  "importer.fingerprint": [
+    "importer.models",
+    "importer.readers"
+  ],
+  "importer.loader": [
+    "importer.models",
+    "importer.repositories"
+  ],
+  "importer.locators": [],
+  "importer.mappers": [
+    "importer.models",
+    "importer.readers",
+    "importer.repositories",
+    "importer.shapers"
+  ],
+  "importer.masking": [],
+  "importer.mcp_server": [
+    "importer.addresses",
+    "importer.admin",
+    "importer.locators",
+    "importer.onboarding",
+    "importer.schema_sources"
+  ],
+  "importer.memory_store": [
+    "importer.metrics",
+    "importer.models",
+    "importer.proposals",
+    "importer.reject_store",
+    "importer.repositories"
+  ],
+  "importer.metrics": [],
+  "importer.models": [],
+  "importer.mssql_store": [
+    "importer.addresses",
+    "importer.models",
+    "importer.proposals",
+    "importer.repositories",
+    "importer.schema_tables"
+  ],
+  "importer.onboarding": [
+    "importer.addresses",
+    "importer.locators",
+    "importer.mappers",
+    "importer.masking",
+    "importer.models",
+    "importer.pipeline",
+    "importer.profiler",
+    "importer.proposals",
+    "importer.readers",
+    "importer.repositories",
+    "importer.settings",
+    "importer.shapers"
+  ],
+  "importer.pipeline": [
+    "importer.detector",
+    "importer.loader",
+    "importer.locators",
+    "importer.mappers",
+    "importer.metrics",
+    "importer.models",
+    "importer.precheck",
+    "importer.profiler",
+    "importer.readers",
+    "importer.repositories"
+  ],
+  "importer.precheck": [
+    "importer.models"
+  ],
+  "importer.profiler": [
+    "importer.models",
+    "importer.readers"
+  ],
+  "importer.proposals": [],
+  "importer.readers": [
+    "importer.models"
+  ],
+  "importer.reclaim": [
+    "importer.models",
+    "importer.reject_store",
+    "importer.rules"
+  ],
+  "importer.reject_store": [
+    "importer.models"
+  ],
+  "importer.repositories": [
+    "importer.models",
+    "importer.reject_store"
+  ],
+  "importer.rules": [],
+  "importer.schema_sources": [
+    "importer.addresses",
+    "importer.admin",
+    "importer.db",
+    "importer.settings"
+  ],
+  "importer.schema_tables": [
+    "importer.addresses"
+  ],
+  "importer.settings": [
+    "importer.models",
+    "importer.repositories"
+  ],
+  "importer.shapers": [
+    "importer.readers"
+  ],
+  "tests": [
+    "importer.addresses",
+    "importer.admin",
+    "importer.cli",
+    "importer.data_guard",
+    "importer.db",
+    "importer.detector",
+    "importer.environment",
+    "importer.fingerprint",
+    "importer.loader",
+    "importer.locators",
+    "importer.mappers",
+    "importer.masking",
+    "importer.mcp_server",
+    "importer.memory_store",
+    "importer.metrics",
+    "importer.models",
+    "importer.mssql_store",
+    "importer.onboarding",
+    "importer.pipeline",
+    "importer.precheck",
+    "importer.profiler",
+    "importer.proposals",
+    "importer.readers",
+    "importer.reclaim",
+    "importer.reject_store",
+    "importer.repositories",
+    "importer.rules",
+    "importer.schema_sources",
+    "importer.schema_tables",
+    "importer.settings",
+    "importer.shapers"
+  ]
+}

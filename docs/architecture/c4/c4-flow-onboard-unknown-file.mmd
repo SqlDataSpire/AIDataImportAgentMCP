@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor steward as Data steward
+    participant claude_client as User's Claude client
+    participant importer_mcp_server as importer.mcp_server
+    participant importer_onboarding as importer.onboarding
+    participant importer_masking as importer.masking
+    participant importer_mssql_store as importer.mssql_store
+    participant importer_pipeline as importer.pipeline
+    steward->>claude_client: /mcp__importer__onboard
+    claude_client->>importer_mcp_server: list_pending, get_file_profile, get_prior_mappings [MCP]
+    importer_mcp_server->>importer_onboarding: Profile, candidates, deterministic draft
+    claude_client->>importer_mcp_server: preview_mapping, submit_mapping (draft spec) [MCP]
+    importer_onboarding->>importer_masking: Mask preview sample values
+    importer_mcp_server-->>claude_client: Review table (metadata and masked shapes only)
+    steward->>claude_client: Approves accept_mapping
+    Note over claude_client: the sign-off gate
+    claude_client->>importer_mcp_server: accept_mapping (client asks the steward first) [MCP]
+    importer_mcp_server->>importer_onboarding: accept()
+    importer_onboarding->>importer_mssql_store: Bind signature to mapper (one transaction)
+    importer_onboarding->>importer_pipeline: retry() every waiting file
+    importer_mcp_server-->>claude_client: Each waiting file's status and percent_loaded

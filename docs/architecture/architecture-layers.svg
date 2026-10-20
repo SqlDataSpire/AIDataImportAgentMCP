@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 960 800" font-family="Segoe UI, Arial, sans-serif">
+  <title>Data Agent: Importer — module layers</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5E6C84"/>
+    </marker>
+  </defs>
+  <rect width="960" height="800" fill="#FFFFFF"/>
+
+  <text x="40" y="38" font-size="22" font-weight="700" fill="#172B4D">Data Agent: Importer — module layers</text>
+  <text x="40" y="62" font-size="13" fill="#5E6C84">Each layer imports only the layers below it (checked 2026-10-05: 71 imports point down, 21 stay within a layer, 0 point up).</text>
+
+  <!-- 1 Entry points -->
+  <rect x="40" y="84" width="880" height="64" rx="8" fill="#DEEBFF" stroke="#4C9AFF"/>
+  <text x="60" y="111" font-size="15" font-weight="700" fill="#172B4D">Entry points</text>
+  <text x="60" y="131" font-size="12" fill="#42526E">how work starts</text>
+  <text x="320" y="111" font-size="14" fill="#172B4D">cli · mcp_server</text>
+  <text x="320" y="131" font-size="12" fill="#42526E">the importer CLI, and the MCP server for the user's Claude client</text>
+  <line x1="170" y1="148" x2="170" y2="170" stroke="#5E6C84" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 2 Onboarding -->
+  <rect x="40" y="174" width="880" height="64" rx="8" fill="#E3FCEF" stroke="#57D9A3"/>
+  <text x="60" y="201" font-size="15" font-weight="700" fill="#172B4D">Onboarding (M2b)</text>
+  <text x="60" y="221" font-size="12" fill="#42526E">confirm-and-bind unknown files</text>
+  <text x="320" y="201" font-size="14" fill="#172B4D">onboarding · schema_sources · admin · masking</text>
+  <text x="320" y="221" font-size="12" fill="#42526E">drafts, previews, accept/bind; schema import; all row values masked here</text>
+  <line x1="170" y1="238" x2="170" y2="260" stroke="#5E6C84" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 3 Fast path -->
+  <rect x="40" y="264" width="880" height="64" rx="8" fill="#FFFAE6" stroke="#FFC400"/>
+  <text x="60" y="291" font-size="15" font-weight="700" fill="#172B4D">Fast path (M2a)</text>
+  <text x="60" y="311" font-size="12" fill="#42526E">the state machine</text>
+  <text x="320" y="291" font-size="14" fill="#172B4D">pipeline · detector · fingerprint · profiler · precheck · loader · locators</text>
+  <text x="320" y="311" font-size="12" fill="#42526E">detect → land → promote; miss profiling; reads files from their shared locator</text>
+  <line x1="170" y1="328" x2="170" y2="350" stroke="#5E6C84" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 4 Mapping -->
+  <rect x="40" y="354" width="880" height="64" rx="8" fill="#EAE6FF" stroke="#998DD9"/>
+  <text x="60" y="381" font-size="15" font-weight="700" fill="#172B4D">Mapping</text>
+  <text x="60" y="401" font-size="12" fill="#42526E">file → rows</text>
+  <text x="320" y="381" font-size="14" fill="#172B4D">mappers · shapers · readers</text>
+  <text x="320" y="401" font-size="12" fill="#42526E">six format readers; declarative specs, Excel shapers, hash-pinned plugins</text>
+  <line x1="170" y1="418" x2="170" y2="440" stroke="#5E6C84" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 5 Settings & safeguards -->
+  <rect x="40" y="444" width="880" height="64" rx="8" fill="#FFEBE6" stroke="#FF8F73"/>
+  <text x="60" y="471" font-size="15" font-weight="700" fill="#172B4D">Settings &amp; safeguards</text>
+  <text x="60" y="491" font-size="12" fill="#42526E">shared config and guards</text>
+  <text x="320" y="471" font-size="14" fill="#172B4D">settings · environment · db · config · data_guard</text>
+  <text x="320" y="491" font-size="12" fill="#42526E">settings in the DB; DEV guard; read-only destination engines; data-boundary hook</text>
+  <line x1="170" y1="508" x2="170" y2="530" stroke="#5E6C84" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 6 Stores -->
+  <rect x="40" y="534" width="880" height="64" rx="8" fill="#E6FCFF" stroke="#79E2F2"/>
+  <text x="60" y="561" font-size="15" font-weight="700" fill="#172B4D">Stores</text>
+  <text x="60" y="581" font-size="12" fill="#42526E">control plane + raw zone</text>
+  <text x="320" y="561" font-size="12.5" fill="#172B4D">repositories · memory_store · mssql_store · schema_tables · reject_store · reclaim · rules · metrics</text>
+  <text x="320" y="581" font-size="12" fill="#42526E">Protocols with in-memory + SQL Server stores; invariants: metrics (#1), reclaim (#2)</text>
+  <line x1="170" y1="598" x2="170" y2="620" stroke="#5E6C84" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 7 Foundation -->
+  <rect x="40" y="624" width="880" height="64" rx="8" fill="#F4F5F7" stroke="#B3BAC5"/>
+  <text x="60" y="651" font-size="15" font-weight="700" fill="#172B4D">Foundation</text>
+  <text x="60" y="671" font-size="12" fill="#42526E">no internal imports</text>
+  <text x="320" y="651" font-size="14" fill="#172B4D">models · addresses · proposals</text>
+  <text x="320" y="671" font-size="12" fill="#42526E">statuses and row types; destination addresses; the proposal record shape</text>
+
+  <!-- Reserved stub -->
+  <rect x="40" y="712" width="880" height="44" rx="8" fill="#FFFFFF" stroke="#B3BAC5" stroke-dasharray="6 4"/>
+  <text x="60" y="739" font-size="14" font-weight="700" fill="#5E6C84">Reserved</text>
+  <text x="320" y="739" font-size="14" fill="#5E6C84">agent — M5 stub (raises NotImplementedError); imports nothing, imported by nothing</text>
+
+  <text x="40" y="784" font-size="12" fill="#5E6C84">Source: docs/architecture/generated/dependency-graph.mmd (architecture-diagram-generator v1.1.0). tests/ imports every layer.</text>
+</svg>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic plan-benefit template. Invented values. -->
+<planBenefitTemplateVO xmlns="http://vo.ffe.cms.hhs.gov">
+  <packagesList>
+    <packages>
+      <header>
+        <templateVersion>v13.0</templateVersion>
+        <issuerId cellLocation="B2-1"><cellValue>11111</cellValue></issuerId>
+        <statePostalCode cellLocation="B3-1"><cellValue>DC</cellValue></statePostalCode>
+        <dentalPlanOnlyInd cellLocation="B4-1"><cellValue>No</cellValue></dentalPlanOnlyInd>
+        <marketCoverage cellLocation="B5-1"><cellValue>Individual</cellValue></marketCoverage>
+      </header>
+      <benefitsList>
+        <benefits>
+          <benefitTypeCode><cellValue>Primary Care Visit</cellValue></benefitTypeCode>
+          <isEHB><cellValue>Yes</cellValue></isEHB>
+          <isBenefitCovered><cellValue>Covered</cellValue></isBenefitCovered>
+        </benefits>
+        <benefits>
+          <benefitTypeCode><cellValue>Specialist Visit</cellValue></benefitTypeCode>
+          <isEHB><cellValue>Yes</cellValue></isEHB>
+          <isBenefitCovered><cellValue>Covered</cellValue></isBenefitCovered>
+        </benefits>
+      </benefitsList>
+      <plansList>
+        <plans>
+          <planAttributes>
+            <standardComponentID><cellValue>11111DC0010001</cellValue></standardComponentID>
+            <planMarketingName><cellValue>Sample Gold</cellValue></planMarketingName>
+            <metalLevel><cellValue>Gold</cellValue></metalLevel>
+          </planAttributes>
+          <costShareVariancesList>
+            <costShareVariance>
+              <planId><cellValue>11111DC0010001-01</cellValue></planId>
+              <planVariantMarketingName><cellValue>Sample Gold</cellValue></planVariantMarketingName>
+              <metalLevel><cellValue>Gold</cellValue></metalLevel>
+              <csrVariationType><cellValue>Standard Gold On Exchange Plan</cellValue></csrVariationType>
+              <sbc>
+                <havingBabyDeductible><cellValue>$500</cellValue></havingBabyDeductible>
+                <havingBabyCoPayment><cellValue>$0</cellValue></havingBabyCoPayment>
+              </sbc>
+              <hsa><hsaEligibility><cellValue>No</cellValue></hsaEligibility></hsa>
+              <url><planBrochure><cellValue>https://plans.example.org/a1</cellValue></planBrochure></url>
+              <avCalculator><avCalculatorOutputNumber><cellValue>0.781</cellValue></avCalculatorOutputNumber></avCalculator>
+              <moopList>
+                <moop><name><cellValue>Medical EHB MOOP</cellValue></name><inNetworkTier1IndividualAmount><cellValue>$8,000</cellValue></inNetworkTier1IndividualAmount></moop>
+                <moop><name><cellValue>Drug EHB MOOP</cellValue></name><inNetworkTier1IndividualAmount><cellValue>$2,000</cellValue></inNetworkTier1IndividualAmount></moop>
+              </moopList>
+              <planDeductibleList>
+                <planDeductible><deductibleType><cellValue>Medical EHB Deductible</cellValue></deductibleType><inNetworkTier1Individual><cellValue>$1,500</cellValue></inNetworkTier1Individual></planDeductible>
+              </planDeductibleList>
+              <serviceVisitList>
+                <serviceVisit><visitType><cellValue>Primary Care Visit</cellValue></visitType><copayInNetworkTier1><cellValue>$20</cellValue></copayInNetworkTier1></serviceVisit>
+                <serviceVisit><visitType><cellValue>Specialist Visit</cellValue></visitType><copayInNetworkTier1><cellValue>$40</cellValue></copayInNetworkTier1></serviceVisit>
+              </serviceVisitList>
+            </costShareVariance>
+            <costShareVariance>
+              <planId><cellValue>11111DC0010001-02</cellValue></planId>
+              <planVariantMarketingName><cellValue>Sample Gold Off Exchange</cellValue></planVariantMarketingName>
+              <metalLevel><cellValue>Gold</cellValue></metalLevel>
+              <csrVariationType><cellValue>Standard Gold Off Exchange Plan</cellValue></csrVariationType>
+              <sbc>
+                <havingBabyDeductible><cellValue>$500</cellValue></havingBabyDeductible>
+                <havingBabyCoPayment><cellValue>$10</cellValue></havingBabyCoPayment>
+              </sbc>
+              <hsa><hsaEligibility><cellValue>No</cellValue></hsaEligibility></hsa>
+              <url><planBrochure><cellValue>https://plans.example.org/a2</cellValue></planBrochure></url>
+              <avCalculator><avCalculatorOutputNumber><cellValue>0.779</cellValue></avCalculatorOutputNumber></avCalculator>
+              <moopList>
+                <moop><name><cellValue>Medical EHB MOOP</cellValue></name><inNetworkTier1IndividualAmount><cellValue>$8,000</cellValue></inNetworkTier1IndividualAmount></moop>
+                <moop><name><cellValue>Drug EHB MOOP</cellValue></name><inNetworkTier1IndividualAmount><cellValue>$2,500</cellValue></inNetworkTier1IndividualAmount></moop>
+              </moopList>
+              <planDeductibleList>
+                <planDeductible><deductibleType><cellValue>Medical EHB Deductible</cellValue></deductibleType><inNetworkTier1Individual><cellValue>$1,750</cellValue></inNetworkTier1Individual></planDeductible>
+              </planDeductibleList>
+              <serviceVisitList>
+                <serviceVisit><visitType><cellValue>Primary Care Visit</cellValue></visitType><copayInNetworkTier1><cellValue>$25</cellValue></copayInNetworkTier1></serviceVisit>
+                <serviceVisit><visitType><cellValue>Specialist Visit</cellValue></visitType><copayInNetworkTier1><cellValue>$45</cellValue></copayInNetworkTier1></serviceVisit>
+              </serviceVisitList>
+            </costShareVariance>
+          </costShareVariancesList>
+        </plans>
+      </plansList>
+    </packages>
+    <packages>
+      <header>
+        <templateVersion>v13.0</templateVersion>
+        <issuerId cellLocation="B2-2"><cellValue>22222</cellValue></issuerId>
+        <statePostalCode cellLocation="B3-2"><cellValue>DC</cellValue></statePostalCode>
+        <dentalPlanOnlyInd cellLocation="B4-2"><cellValue>No</cellValue></dentalPlanOnlyInd>
+        <marketCoverage cellLocation="B5-2"><cellValue>SHOP (Small Group)</cellValue></marketCoverage>
+      </header>
+      <benefitsList>
+        <benefits>
+          <benefitTypeCode><cellValue>Primary Care Visit</cellValue></benefitTypeCode>
+          <isEHB><cellValue>Yes</cellValue></isEHB>
+          <isBenefitCovered><cellValue>Covered</cellValue></isBenefitCovered>
+        </benefits>
+      </benefitsList>
+      <plansList>
+        <plans>
+          <planAttributes>
+            <standardComponentID><cellValue>22222DC0020001</cellValue></standardComponentID>
+            <planMarketingName><cellValue>Sample Silver</cellValue></planMarketingName>
+            <metalLevel><cellValue>Silver</cellValue></metalLevel>
+          </planAttributes>
+          <costShareVariancesList>
+            <costShareVariance>
+              <planId><cellValue>22222DC0020001-01</cellValue></planId>
+              <planVariantMarketingName><cellValue>Sample Silver</cellValue></planVariantMarketingName>
+              <metalLevel><cellValue>Silver</cellValue></metalLevel>
+              <csrVariationType><cellValue>Standard Silver On Exchange Plan</cellValue></csrVariationType>
+              <sbc>
+                <havingBabyDeductible><cellValue>$1,000</cellValue></havingBabyDeductible>
+                <havingBabyCoPayment><cellValue>$30</cellValue></havingBabyCoPayment>
+              </sbc>
+              <hsa><hsaEligibility><cellValue>Yes</cellValue></hsaEligibility></hsa>
+              <url><planBrochure><cellValue>https://plans.example.org/b1</cellValue></planBrochure></url>
+              <avCalculator><avCalculatorOutputNumber><cellValue>0.701</cellValue></avCalculatorOutputNumber></avCalculator>
+              <moopList>
+                <moop><name><cellValue>Medical EHB MOOP</cellValue></name><inNetworkTier1IndividualAmount><cellValue>$9,000</cellValue></inNetworkTier1IndividualAmount></moop>
+              </moopList>
+              <planDeductibleList>
+                <planDeductible><deductibleType><cellValue>Combined Deductible</cellValue></deductibleType><inNetworkTier1Individual><cellValue>$3,000</cellValue></inNetworkTier1Individual></planDeductible>
+              </planDeductibleList>
+              <serviceVisitList>
+                <serviceVisit><visitType><cellValue>Primary Care Visit</cellValue></visitType><copayInNetworkTier1><cellValue>$35</cellValue></copayInNetworkTier1></serviceVisit>
+              </serviceVisitList>
+            </costShareVariance>
+          </costShareVariancesList>
+        </plans>
+      </plansList>
+    </packages>
+  </packagesList>
+</planBenefitTemplateVO>

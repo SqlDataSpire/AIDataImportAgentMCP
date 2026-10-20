@@ -1,0 +1,45 @@
+{
+  "kind": "tree",
+  "namespaces": {"x": "http://vo.ffe.cms.hhs.gov"},
+  "value_child": "x:cellValue",
+  "column": [
+    {"name": "fileid", "path": "$file_id"},
+    {"name": "binder_name", "path": "$context.binder_name"},
+    {"name": "run_id", "path": "$context.run_id"},
+    {"name": "templateVersion", "path": "x:header/x:templateVersion"},
+    {"name": "issuer_id", "path": "x:header/x:issuerId"},
+    {"name": "state_code", "path": "x:header/x:statePostalCode"}
+  ],
+  "select": [
+    {"forEach": "x:formularyList/x:formularyVO",
+     "column": [{"name": "formulary_id", "path": "x:formularyID"},
+                {"name": "drug_list_id", "path": "x:drugListID"},
+                {"name": "num_of_tiers", "path": "x:numberTiers"}],
+     "select": [
+       {"forEach": "x:formularyCostSharingTypeList/x:formularyCostSharingTypeVO",
+        "column": [{"name": "drug_tier_id", "path": "x:drugTierLevel"},
+                   {"name": "one_month", "path": "x:oneMonthOutNetworkRetailOfferedIndicator"},
+                   {"name": "three_month_in", "path": "x:threeMonthInNetworkMailOfferedIndicator"},
+                   {"name": "three_month_out", "path": "x:threeMonthOutNetworkMailOfferedIndicator"}],
+        "select": [
+          {"forEach": "x:costSharingTypeList/x:costSharingTypeVO",
+           "table": "app_db.xml.formulary_benefit_definition",
+           "column": [{"name": "cost_coverage_type", "path": "x:networkCostType"},
+                      {"name": "prescription_period", "path": "x:drugPrescriptionPeriodType"},
+                      {"name": "copay", "path": "x:coPayment"},
+                      {"name": "coin", "path": "x:coInsurance"}]}]}]},
+    {"forEach": "x:drugList/x:drugListVO",
+     "column": [{"name": "drug_list_id", "path": "x:drugListID"}],
+     "select": [
+       {"forEach": "x:drugTierLevelList/x:drugTierLevelVO",
+        "table": "app_db.xml.formulary_tier_definition",
+        "column": [{"name": "tier_level", "path": "x:drugTierLevel"},
+                   {"name": "tier_type", "path": "x:drugTierType"}]},
+       {"forEach": "x:drugVOList/x:drugVO",
+        "table": "app_db.xml.formulary_drug_list",
+        "column": [{"name": "rxcui", "path": "x:rXCUI"},
+                   {"name": "tier_level", "path": "x:tier"},
+                   {"name": "authorizationRequired", "path": "x:authorizationRequired"},
+                   {"name": "stepTherapyRequired", "path": "x:stepTherapyRequired"}]}]}
+  ]
+}

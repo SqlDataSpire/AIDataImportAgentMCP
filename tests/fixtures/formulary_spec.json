@@ -1,0 +1,62 @@
+{
+  "kind": "xml",
+  "namespaces": {"x": "http://vo.ffe.cms.hhs.gov"},
+  "value_child": "x:cellValue",
+  "extractions": [
+    {
+      "target": "app_db.xml.formulary_benefit_definition",
+      "records": "/x:prescriptionDrugTemplateVO/x:formularyList/x:formularyVO/x:formularyCostSharingTypeList/x:formularyCostSharingTypeVO/x:costSharingTypeList/x:costSharingTypeVO",
+      "fields": {
+        "fileid": "$file_id",
+        "binder_name": "$context.binder_name",
+        "run_id": "$context.run_id",
+        "templateVersion": "/x:prescriptionDrugTemplateVO/x:header/x:templateVersion",
+        "issuer_id": "/x:prescriptionDrugTemplateVO/x:header/x:issuerId",
+        "state_code": "/x:prescriptionDrugTemplateVO/x:header/x:statePostalCode",
+        "formulary_id": "../../../../x:formularyID",
+        "drug_list_id": "../../../../x:drugListID",
+        "num_of_tiers": "../../../../x:numberTiers",
+        "drug_tier_id": "../../x:drugTierLevel",
+        "one_month": "../../x:oneMonthOutNetworkRetailOfferedIndicator",
+        "three_month_in": "../../x:threeMonthInNetworkMailOfferedIndicator",
+        "three_month_out": "../../x:threeMonthOutNetworkMailOfferedIndicator",
+        "cost_coverage_type": "x:networkCostType",
+        "prescription_period": "x:drugPrescriptionPeriodType",
+        "copay": "x:coPayment",
+        "coin": "x:coInsurance"
+      }
+    },
+    {
+      "target": "app_db.xml.formulary_tier_definition",
+      "records": "/x:prescriptionDrugTemplateVO/x:drugList/x:drugListVO/x:drugTierLevelList/x:drugTierLevelVO",
+      "fields": {
+        "fileid": "$file_id",
+        "binder_name": "$context.binder_name",
+        "run_id": "$context.run_id",
+        "templateVersion": "/x:prescriptionDrugTemplateVO/x:header/x:templateVersion",
+        "issuer_id": "/x:prescriptionDrugTemplateVO/x:header/x:issuerId",
+        "state_code": "/x:prescriptionDrugTemplateVO/x:header/x:statePostalCode",
+        "drug_list_id": "../../x:drugListID",
+        "tier_level": "x:drugTierLevel",
+        "tier_type": "x:drugTierType"
+      }
+    },
+    {
+      "target": "app_db.xml.formulary_drug_list",
+      "records": "/x:prescriptionDrugTemplateVO/x:drugList/x:drugListVO/x:drugVOList/x:drugVO",
+      "fields": {
+        "fileid": "$file_id",
+        "binder_name": "$context.binder_name",
+        "run_id": "$context.run_id",
+        "templateVersion": "/x:prescriptionDrugTemplateVO/x:header/x:templateVersion",
+        "issuer_id": "/x:prescriptionDrugTemplateVO/x:header/x:issuerId",
+        "state_code": "/x:prescriptionDrugTemplateVO/x:header/x:statePostalCode",
+        "drug_list_id": "../../x:drugListID",
+        "rxcui": "x:rXCUI",
+        "tier_level": "x:tier",
+        "authorizationRequired": "x:authorizationRequired",
+        "stepTherapyRequired": "x:stepTherapyRequired"
+      }
+    }
+  ]
+}

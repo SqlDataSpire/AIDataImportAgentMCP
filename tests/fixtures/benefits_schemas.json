@@ -1,0 +1,13 @@
+{
+  "app_db.xml.package": ["fileid", "binder_name", "run_id", "packageid", "packagename", "templateversion", "issuerid", "statepostalcode", "dentalplanonlyind", "marketcoverage"],
+  "app_db.xml.benefits": ["fileid", "binder_name", "run_id", "packageid", "benefittypecode", "isehb", "isbenefitcovered"],
+  "app_db.xml.planattributes": ["fileid", "binder_name", "run_id", "packageid", "standardcomponentid", "planmarketingname", "metallevel"],
+  "app_db.xml.costsharevariance": ["fileid", "binder_name", "run_id", "packageid", "costsharevarianceid", "planid", "planvariantmarketingname", "metallevel", "csrvariationtype"],
+  "app_db.xml.sbc": ["fileid", "binder_name", "run_id", "costsharevarianceid", "havingbabydeductible", "havingbabycopayment"],
+  "app_db.xml.hsa": ["fileid", "binder_name", "run_id", "costsharevarianceid", "hsaeligibility"],
+  "app_db.xml.url": ["fileid", "binder_name", "run_id", "costsharevarianceid", "planbrochure"],
+  "app_db.xml.avcalculator": ["fileid", "binder_name", "run_id", "costsharevarianceid", "avcalculatoroutputnumber"],
+  "app_db.xml.mooplist": ["fileid", "binder_name", "run_id", "costsharevarianceid", "name", "innetworktier1individualamount"],
+  "app_db.xml.plandeductiblelist": ["fileid", "binder_name", "run_id", "costsharevarianceid", "deductibletype", "innetworktier1individual"],
+  "app_db.xml.servicevisitlist": ["fileid", "binder_name", "run_id", "costsharevarianceid", "visittype", "copayinnetworktier1"]
+}

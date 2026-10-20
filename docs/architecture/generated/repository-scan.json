@@ -1,0 +1,287 @@
+{
+  "solutions": [],
+  "projects": [
+    {
+      "name": "importer.addresses",
+      "path": "src/importer/addresses.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.admin",
+      "path": "src/importer/admin.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.agent",
+      "path": "src/importer/agent",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.cli",
+      "path": "src/importer/cli.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.config",
+      "path": "src/importer/config.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.data_guard",
+      "path": "src/importer/data_guard.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.db",
+      "path": "src/importer/db.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.detector",
+      "path": "src/importer/detector.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.environment",
+      "path": "src/importer/environment.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.fingerprint",
+      "path": "src/importer/fingerprint.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.loader",
+      "path": "src/importer/loader.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.locators",
+      "path": "src/importer/locators.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.mappers",
+      "path": "src/importer/mappers",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.masking",
+      "path": "src/importer/masking.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.mcp_server",
+      "path": "src/importer/mcp_server.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.memory_store",
+      "path": "src/importer/memory_store.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.metrics",
+      "path": "src/importer/metrics.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.models",
+      "path": "src/importer/models.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.mssql_store",
+      "path": "src/importer/mssql_store.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.onboarding",
+      "path": "src/importer/onboarding.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.pipeline",
+      "path": "src/importer/pipeline.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.precheck",
+      "path": "src/importer/precheck.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.profiler",
+      "path": "src/importer/profiler.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.proposals",
+      "path": "src/importer/proposals.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.readers",
+      "path": "src/importer/readers",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.reclaim",
+      "path": "src/importer/reclaim.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.reject_store",
+      "path": "src/importer/reject_store.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.repositories",
+      "path": "src/importer/repositories.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.rules",
+      "path": "src/importer/rules",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.schema_sources",
+      "path": "src/importer/schema_sources.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.schema_tables",
+      "path": "src/importer/schema_tables.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.settings",
+      "path": "src/importer/settings.py",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "importer.shapers",
+      "path": "src/importer/shapers",
+      "group": "src",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    },
+    {
+      "name": "tests",
+      "path": "tests",
+      "group": "",
+      "ecosystem": "Python",
+      "in_solution": null,
+      "duplicate_name": false
+    }
+  ],
+  "orphan_projects": [],
+  "duplicate_project_names": [],
+  "folders": [
+    "Documents",
+    "docs",
+    "scripts",
+    "sql",
+    "src",
+    "tests"
+  ]
+}
