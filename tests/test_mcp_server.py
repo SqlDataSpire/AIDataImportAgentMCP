@@ -16,7 +16,7 @@ from tests.support import URL_SCHEMA, URL_SPEC_B, URL_TARGET, configure, fixture
 TOOLS = {
     "list_pending", "get_file_profile", "search_schemas", "get_schema", "get_prior_mappings", "get_samples",
     "get_spec_reference", "preview_mapping", "submit_mapping", "reject_mapping", "accept_mapping", "register_schema",
-    "get_tree",
+    "get_tree", "get_connection_status", "authenticate", "ingest_file", "register_destination",
 }
 RATIONALE = [{"column": "url", "target": "newurl", "how": "model", "evidence": "values are URLs", "confidence": 0.9}]
 
@@ -171,3 +171,45 @@ def test_the_prompt_and_reference_cover_tree_specs():
 
     assert "get_tree" in ONBOARD_PROMPT and '"kind": "tree"' in ONBOARD_PROMPT
     assert '"kind": "tree"' in spec_reference() and "forEach" in spec_reference()
+
+
+@pytest.mark.anyio
+async def test_accept_mapping_with_user_confirmed_fallback_without_elicitation():
+    store = _parked()
+    # Client without elicitation callback
+    async with Client(create_server(store, user="tony"), raise_exceptions=True) as client:
+        sid = _json(await client.call_tool("list_pending", {}))["pending"][0]["signature_id"]
+        draft = _json(await client.call_tool("submit_mapping", {"signature_id": sid, "spec": URL_SPEC_B, "rationale": RATIONALE}))
+        # Pass user_confirmed=True directly from chat approval
+        result = _json(await client.call_tool("accept_mapping", {
+            "signature_id": sid,
+            "draft_version_id": draft["draft_version_id"],
+            "user_confirmed": True,
+        }))
+    assert result["files"][0]["status"] == "completed"
+
+
+@pytest.mark.anyio
+async def test_wrangler_tools_ingest_and_register_destination(tmp_path):
+    store = MemoryStore()
+    configure(store, "app_db")
+    async with Client(create_server(store, user="tony"), raise_exceptions=True) as client:
+        # 1. Check connection status
+        status = _json(await client.call_tool("get_connection_status", {}))
+        assert "authenticated" in status
+
+        # 2. Register destination
+        reg = _json(await client.call_tool("register_destination", {"name": "WAREHOUSE", "server": "sql01", "database": "wh_db"}))
+        assert reg["name"] == "WAREHOUSE"
+        assert reg["database"] == "wh_db"
+
+        # 3. Ingest file directly
+        csv_file = tmp_path / "incoming.csv"
+        csv_file.write_text("col_a,col_b\n1,2\n3,4\n", encoding="utf-8")
+        ingest = _json(await client.call_tool("ingest_file", {"path": str(csv_file), "project": "PRJ", "cls": "CLS"}))
+        assert ingest["status"] == "quarantined"
+
+        # 4. Verify it appears in list_pending
+        pending = _json(await client.call_tool("list_pending", {}))
+        assert len(pending["pending"]) == 1
+

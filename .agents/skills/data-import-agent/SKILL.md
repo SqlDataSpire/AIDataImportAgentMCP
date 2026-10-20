@@ -5,7 +5,7 @@ description: Standup, first-run configuration, and operational guide for Data Im
 
 # Data Import Agent MCP — Skill & Operational Guide
 
-This skill guides you through setting up, configuring, and operating the **Data Import Agent MCP**.
+This skill guides you through configuring, operating, and facilitating imports with the **Data Import Agent MCP**.
 
 > [!TIP]
 > For the complete, authoritative manual covering environment promotion (DEV vs PROD), credential security models, and architecture deep dives, see [INSTRUCTIONS.md](file:///f:/Projects/AIDataImportAgentMCP/AIDataImportAgentMCP/INSTRUCTIONS.md).
@@ -15,7 +15,7 @@ This skill guides you through setting up, configuring, and operating the **Data 
 ## 1. What This System Does
 
 The **Data Import Agent** is an ELT (Extract-Load-Transform) machine for landing structured and semi-structured files (CSV, Excel, JSON, NDJSON, XML) directly into Microsoft SQL Server:
-- **Fast Path (Deterministic, 0 Tokens):** Known file signatures are routed instantly into raw SQL Server tables via high-performance batch staging (`fast_executemany`).
+- **Fast Path (Deterministic, 0 Tokens):** Known file signatures are routed instantly into raw SQL Server tables via high-performance batch staging (`fast_executemany` with automatic driver buffer fallback).
 - **Slow Path (Agentic MCP):** Unrecognized files or unlandable rows trigger the MCP agent. The agent inspects masked shapes, matches destination table schemas, drafts declarative mappings, dry-runs with live previews, and submits versioned mapper artifacts for human approval.
 
 ---
@@ -51,168 +51,155 @@ Azure SQL Database or AWS RDS for SQL Server.
 
 ---
 
-## 3. First-Run Standup (`importer setup`)
+## 3. Configuration & Python-DataEngine Integration
 
-The project includes an interactive setup wizard that verifies connectivity, creates the database if it doesn't exist, configures `database.env`, marks the environment, and deploys the control schema.
+The importer connects to SQL Server using SQLAlchemy over pyodbc or `python-DataEngine`.
+
+### No Need for `database.env` or `alchemyObjects` Array
+`python-DataEngine` does **not** require the legacy `alchemyObjects[X]` array or a complex JSON document in `database.env`. `DataEngine.mssql.SqlConnectionObject` directly accepts parameters:
+```python
+SqlConnectionObject(name="importer", server=server, database=database, UN=user, PW=password, trusted=trusted)
+```
+
+The importer resolves connection parameters seamlessly in this priority order:
+1. **MCP Client / CLI Flags:** `--server`, `--database`, `--trusted`, `--user`, `--password`, `--url`
+2. **Standard Environment Variables:** `IMPORTER_SERVER`, `IMPORTER_DATABASE`, `IMPORTER_USER`, `IMPORTER_PASSWORD`, `IMPORTER_TRUSTED`, `IMPORTER_DATABASE_URL`
+3. **Flat `.env` File in Workspace:**
+   ```env
+   SERVER=localhost
+   DATABASE=import_agent_dev
+   TRUSTED=yes
+   ```
+4. **Legacy `database.env` JSON:** Kept for backwards compatibility (`databases='{"importer": {...}}'`).
+
+---
+
+## 4. MCP Client Setup & Session Password Facilitation
+
+### Configuring MCP Clients (`.mcp.json`, Claude Desktop, Cursor, Antigravity)
+
+#### Configuration Pattern A: Windows / Integrated Authentication (No Passwords)
+```json
+{
+  "mcpServers": {
+    "importer": {
+      "command": "python",
+      "args": [
+        "-m", "importer.cli", "mcp",
+        "--server", "localhost",
+        "--database", "import_agent_dev",
+        "--trusted"
+      ]
+    }
+  }
+}
+```
+
+#### Configuration Pattern B: SQL Authentication with In-Chat Session Password (Recommended)
+You do **not** need to put passwords in `.mcp.json` or commit them to disk! Simply specify the username:
+```json
+{
+  "mcpServers": {
+    "importer": {
+      "command": "python",
+      "args": [
+        "-m", "importer.cli", "mcp",
+        "--server", "sqldb.internal",
+        "--database", "import_agent_dev",
+        "-u", "sa"
+      ]
+    }
+  }
+}
+```
+
+### The AI Agent Session Password Flow (UN/PW Connections)
+
+Whenever a chat, project, or session starts:
+1. **Status Check:** The AI agent calls `get_connection_status`.
+2. **Chat Prompt:** If SQL Authentication is used and `authenticated: false`, the AI agent directly asks the user in chat:
+   > *"Your SQL Server connection for user `<username>` on `<server>` requires authentication for this session. What is your password?"*
+3. **In-Memory Authentication:** When the user replies with their password in chat, the AI agent calls:
+   ```json
+   authenticate(password="...")
+   ```
+4. **Zero-Disk Leakage:** The password is kept strictly in-memory in the active Python process. It is **never** written to `database.env`, `.mcp.json`, or logged to `dbo.decision_log`.
+5. **Clean JSON-RPC:** This keeps the stdio JSON-RPC stream 100% clean, avoiding process hangs and input blocking.
+
+---
+
+## 5. First-Run Standup (`importer setup`)
+
+For automated database creation and schema initialization:
 
 ### Interactive Wizard
-In your project virtual environment, run:
 ```bash
 importer setup
 ```
+The wizard checks connectivity, creates the database if it doesn't exist (`CREATE DATABASE`), initializes the environment as `DEV`, and applies `sql/001_schema.sql`.
 
-The wizard will guide you through:
-1. **SQL Server instance check:** Offers the Docker command if you don't have a server running.
-2. **Connection details:** Host, database name (e.g. `import_agent_dev`), authentication mode (SQL Auth, Windows Trusted, or Entra ID).
-3. **Password handling:**
-   - Prompts for password securely without echoing to the screen.
-   - Asks whether to save the password to disk (`database.env`) or keep it in session/environment only.
-4. **Database provisioning:** If the database does not exist on the server, offers to create it automatically (`CREATE DATABASE [<db>]` on `master`).
-5. **Schema deployment:** Initializes the environment as `DEV` and applies `sql/001_schema.sql`.
-6. **MCP instructions:** Displays the exact JSON configuration block to copy into Claude Desktop, Cursor, or Antigravity.
-
-### Scripted / Non-Interactive Standup
-For automation, CI/CD, or headless scripts:
+### Scripted Standup
 ```bash
 importer setup --server localhost --database import_agent_dev --auth sql -u sa -p "YourStrongPassword123!" --create-db --non-interactive
 ```
 
 ---
 
-## 4. Password Security & Unattended / MCP Execution
-
-### Interactive CLI Mode
-If `UN` (username) is defined in `database.env` but `PW` is omitted:
-- Whenever an interactive CLI command runs (`importer process`, `importer preview`, `importer db ...`), it prompts:
-  `Enter SQL Server password for <user>@<server>:`
-- The password is read securely via Python's standard `getpass` module and cached in memory for that process session only (`_SESSION_PASSWORD`).
-- **The password is never written to disk.**
-
-### Unattended / MCP Mode (`importer mcp`)
-MCP servers communicate with AI clients (Claude Desktop, Claude Code, Cursor, Antigravity) via JSON-RPC over standard input/output (`sys.stdin` / `sys.stdout`).
-- An MCP server **cannot prompt on `sys.stdin`** without corrupting the JSON-RPC message framing and hanging the client.
-- To run unattended or over MCP without storing plaintext passwords in `database.env`, provide the password via the `IMPORTER_PASSWORD` environment variable.
-
-#### Configuring MCP Clients:
-
-**Option 1: In Client MCP Settings (Claude Desktop / Cursor / Antigravity)**
-```json
-{
-  "mcpServers": {
-    "importer": {
-      "command": "F:/Projects/AIDataImportAgentMCP/AIDataImportAgentMCP/.venv/Scripts/python.exe",
-      "args": ["-m", "importer.cli", "mcp"],
-      "env": {
-        "IMPORTER_PASSWORD": "YourStrongPassword123!"
-      }
-    }
-  }
-}
-```
-
-**Option 2: In Shell Environment (PowerShell)**
-```powershell
-$env:IMPORTER_PASSWORD = "YourStrongPassword123!"
-importer mcp
-```
-
-**Option 3: Stored in `database.env`**
-If you choose to store the password in `database.env`:
-- Ensure `database.env` is in `.gitignore` (the setup wizard automatically checks and ensures this).
-- Restrict file permissions on `database.env`.
-
----
-
-## 5. Architecture: Control vs. Destination Databases
+## 6. Architecture: Control vs. Destination Databases
 
 Understanding the boundary between databases is critical:
 
 | Database | Role | Read/Write Policy |
 | :--- | :--- | :--- |
-| **Control Database** (`import_agent_dev`) | Ledger, audit trail, versioned mappers, signatures, rejects, quarantined files. | **Full Read/Write.** Managed exclusively by `importer`. |
+| **Control Database** (`import_agent_dev`) | Ledger, audit trail, versioned mappers, signatures, rejects, quarantined files. | **Full Read/Write.** Managed exclusively by `importer`. Also serves as the default implicit target. |
 | **Destination Database(s)** (e.g. `APP_DB`) | Your enterprise tables where data ultimately belongs. | **READ-ONLY.** Guarded at the engine level (`read_only`). The importer NEVER writes to destination databases. It only reads `sys.tables` and `sys.columns` during schema import. |
 
 > [!NOTE]
 > **Landing schemas are created strictly on-demand, never pre-inserted:**
-> The control database starts with only the core control tables (`dbo.file_ledger`, `dbo.artifact_versions`, etc.). Raw landing tables (`[<dest_db>_<dest_schema>].[<table>]`) and staging tables are dynamically generated only when the user or agent imports/registers destination schemas (via `register_schema` or `importer schema import`). If no schemas have been imported yet, zero landing schemas exist.
+> The control database starts with only the core control tables (`dbo.file_ledger`, `dbo.artifact_versions`, etc.). Raw landing tables (`[<dest_db>_<dest_schema>].[<table>]`) and staging tables are dynamically generated only when the user or agent imports/registers destination schemas (via `register_schema` or `importer schema import`).
 
 ---
 
-## 6. End-to-End Operational Workflow
+## 7. End-to-End Operational Workflow (Chat & CLI)
 
-### Step 1: Register Destination Database
-Tell the importer where your target tables live:
-```bash
-importer config set destination my_app --server localhost --database my_app_db
-```
+### 1. Introduce Incoming Files (`ingest_file`)
+Users can introduce incoming files directly from chat:
+- Call `ingest_file(path="path/to/data.csv", project="CRM", cls="CUSTOMER")`.
+- If a known signature matches, the file lands immediately.
+- If unrecognized or drifted, it is quarantined and listed in `list_pending`.
 
-### Step 2: Import Destination Table Schema
-Pull column definitions into the control database's versioned registry:
-```bash
-# Live extraction from SQL Server:
-importer schema import my_app.dbo.customers
+### 2. Inspect Profile & Candidates
+- Call `list_pending` to see waiting quarantined files.
+- Call `get_file_profile(signature_id=...)` to inspect headers, row counts, and structural shape (real values are masked; raw data never reaches the LLM).
 
-# Or import from a column definition file:
-importer schema import my_app.dbo.customers --from-file ./schema.json
-```
+### 3. Match Destination Tables & Draft Spec
+- Call `search_schemas(columns=[...])` or `register_schema(address_or_pattern="APP_DB.dbo.customers")`.
+- Draft a declarative mapping spec adhering to `get_spec_reference`.
+- Call `preview_mapping(signature_id=..., spec=...)` to test column alignments and see sample masked output.
 
-### Step 3: Fast-Path Ingestion (Production Run)
-When an incoming file arrives and its layout has an active signature:
-```bash
-importer process ./incoming/customers_20261019.csv \
-  --project CRM \
-  --class CUSTOMER \
-  --type CSV \
-  --source sftp_feed \
-  --context run_id=101 batch_date=2026-10-19
-```
-Output:
-```json
-{
-  "status": "completed",
-  "rows_landed": 500,
-  "rows_rejected": 0,
-  "percent_loaded": "100.00"
-}
-```
-
-### Step 4: Slow-Path Edge Onboarding (New / Unknown Files)
-When a file arrives with an unknown header or structure, it is safely quarantined:
-```json
-{
-  "status": "quarantined",
-  "quarantine_reason": "unroutable",
-  "file_id": 42
-}
-```
-
-To resolve it with your AI assistant:
-1. Run `importer mcp` (or open your MCP-enabled editor/chat).
-2. The agent uses the MCP tool suite:
-   - `list_pending`: Lists quarantined files.
-   - `get_file_profile`: Inspects header names, sample row counts, and structural characteristics (values are masked; real data never leaves SQL Server).
-   - `search_schemas`: Finds matching destination tables.
-   - `preview_mapping`: Dry-runs a proposed mapping and checks column alignments.
-   - `submit_mapping`: Saves the proposed mapping draft.
-   - `accept_mapping`: User signs off on the mapping (human-in-the-loop gate).
-3. Re-enter the quarantined file:
-```bash
-importer retry 42
-```
-The file re-enters the machine, matches the newly approved signature, and lands raw!
+### 4. Human-in-the-Loop Sign-Off
+- Call `submit_mapping(signature_id=..., spec=..., rationale=[...])`.
+- Present the review table to the user in chat.
+- When the user confirms approval in chat, call `accept_mapping(signature_id=..., draft_version_id=..., user_confirmed=True)`.
+  *(Passing `user_confirmed=True` ensures approval proceeds reliably across all MCP clients, even those lacking interactive form elicitation).*
 
 ---
 
-## 7. Useful Reference Commands
+## 8. MCP Tool Reference
 
-| Command | Description |
-| :--- | :--- |
-| `importer setup` | Interactive standup wizard. |
-| `importer mcp` | Launch MCP server over stdio for AI assistants. |
-| `importer pending` | View files waiting for onboarding. |
-| `importer config show` | View all shared settings stored in the database. |
-| `importer config set samples.max_values 100` | Adjust sampling thresholds in the database. |
-| `importer db init --environment DEV --confirm <db>` | Mark database environment (once). |
-| `importer db rebuild --confirm <db>` | DEV only: Drop and re-deploy schema from `sql/001_schema.sql`. |
-| `pytest` | Run complete unit and property test suites (364 tests). |
-| `pytest -m integration` | Run live SQL Server integration tests against DEV database. |
+| Tool | Purpose | Annotations |
+| :--- | :--- | :--- |
+| `get_connection_status` | Check active server, database, user, and authentication state. | Read-Only |
+| `authenticate` | Supply SQL Server password for the current session in-memory. | Writes |
+| `ingest_file` | Introduce incoming files to the pipeline from chat. | Writes |
+| `register_destination` | Register destination database alias (server/database) in configuration. | Writes |
+| `list_pending` | List quarantined files awaiting mapping. | Read-Only |
+| `get_file_profile` | Structural profile of a quarantined file (masked). | Read-Only |
+| `search_schemas` | Find destination schemas by column overlap or name. | Read-Only |
+| `get_schema` | Inspect column definitions for a registered schema address. | Read-Only |
+| `get_prior_mappings` | Retrieve existing approved specs feeding a destination schema. | Read-Only |
+| `preview_mapping` | Dry-run a spec against waiting file rows. | Read-Only |
+| `submit_mapping` | Submit a draft spec with column rationales for review. | Writes |
+| `accept_mapping` | Sign-off: bind draft to signature and retry quarantined files (`user_confirmed=True`). | Sign-Off |
+| `reject_mapping` | Reject proposed mapping. | Writes |
+| `register_schema` | Sign-off: register live destination tables or explicit column list. | Sign-Off |

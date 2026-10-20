@@ -143,3 +143,32 @@ def test_native_connection_engine_without_dataengine(monkeypatch):
     engine = _connection_engine(name="test", server="s", database="d", doc=doc)
     assert engine.dialect.name == "sqlite"
 
+
+def test_flat_env_file_support(tmp_path):
+    env_file = tmp_path / ".env"
+    env_file.write_text("SERVER=flat-server\nDATABASE=flat-db\nTRUSTED=yes\n", encoding="utf-8")
+    doc = load_connection_document(env_file)
+    assert doc["server"] == "flat-server"
+    assert doc["database"] == "flat-db"
+    assert doc["trusted"] == "yes"
+
+
+def test_current_connection_info(monkeypatch, tmp_path):
+    from importer import db
+
+    env_file = tmp_path / "database.env"
+    env_file.write_text("SERVER=test-srv\nDATABASE=test-db\nUN=test-user\n", encoding="utf-8")
+    monkeypatch.setattr(db, "database_env_path", lambda: env_file)
+
+    info = db.current_connection_info()
+    assert info["server"] == "test-srv"
+    assert info["database"] == "test-db"
+    assert info["user"] == "test-user"
+    assert info["authenticated"] is False
+
+    db.set_session_password("test-pwd")
+    info2 = db.current_connection_info()
+    assert info2["authenticated"] is True
+    db.set_session_password(None)
+
+

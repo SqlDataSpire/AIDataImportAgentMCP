@@ -10,6 +10,7 @@ import json
 import re
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import Any
 
 import pyodbc
 from sqlalchemy import text
@@ -458,13 +459,18 @@ class MssqlRawZone:
         with self.c.begin_nested():
             cursor = self.c.connection.cursor()
             try:
-                cursor.fast_executemany = True
-                if USE_SETINPUTSIZES:
-                    cursor.setinputsizes(
-                        [(pyodbc.SQL_BIGINT, 0, 0), (pyodbc.SQL_WVARCHAR, 256, 0), (pyodbc.SQL_BIGINT, 0, 0),
-                         (pyodbc.SQL_BIGINT, 0, 0)] + [(pyodbc.SQL_WVARCHAR, 0, 0)] * (len(names) - 4)
-                    )
-                cursor.executemany(sql, params)
+                try:
+                    cursor.fast_executemany = True
+                    if USE_SETINPUTSIZES:
+                        cursor.setinputsizes(
+                            [(pyodbc.SQL_BIGINT, 0, 0), (pyodbc.SQL_WVARCHAR, 256, 0), (pyodbc.SQL_BIGINT, 0, 0),
+                             (pyodbc.SQL_BIGINT, 0, 0)] + [(pyodbc.SQL_WVARCHAR, 0, 0)] * (len(names) - 4)
+                        )
+                    cursor.executemany(sql, params)
+                except (MemoryError, pyodbc.OperationalError):
+                    # Fallback for pyodbc fast_executemany buffer allocation failures on large batches or NVARCHAR(MAX)
+                    cursor.fast_executemany = False
+                    cursor.executemany(sql, params)
             except pyodbc.Error as exc:
                 if is_data_error(exc):
                     raise RowDataError(str(exc)) from exc
@@ -504,8 +510,21 @@ class MssqlTx:
 
 
 class MssqlStore:
-    def __init__(self, engine: Engine):
-        self.engine = engine
+    def __init__(self, engine: Engine | Any = None):
+        self._engine = engine
+
+    @property
+    def engine(self) -> Engine:
+        if self._engine is None or callable(self._engine):
+            from .db import get_engine
+            return self._engine() if callable(self._engine) else get_engine()
+        return self._engine
+
+    def reset_engine(self) -> None:
+        """Clear cached engine so updated credentials take effect."""
+        if not callable(self._engine):
+            from .db import get_engine
+            self._engine = get_engine
 
     @contextmanager
     def transaction(self) -> Iterator[MssqlTx]:

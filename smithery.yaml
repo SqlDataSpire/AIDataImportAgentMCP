@@ -3,12 +3,27 @@ startCommand:
   configSchema:
     type: object
     properties:
+      server:
+        type: string
+        description: "SQL Server hostname or instance (e.g. localhost, sqldb.internal)"
+      database:
+        type: string
+        description: "Control database name (e.g. import_agent_dev)"
+      trusted:
+        type: boolean
+        description: "Use Windows / Integrated authentication (true/false)"
+      user:
+        type: string
+        description: "SQL Server username (for SQL authentication)"
+      password:
+        type: string
+        description: "SQL Server password (optional; can be prompted securely in chat at session start)"
       databaseUrl:
         type: string
         description: "SQL Server SQLAlchemy connection string (e.g. mssql+pyodbc://user:pass@host/db?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes)"
       importerHome:
         type: string
-        description: "Absolute path to workspace containing database.env or artifacts"
+        description: "Absolute path to workspace containing database.env, .env, or artifacts"
     required: []
   commandFunction:
     - importer

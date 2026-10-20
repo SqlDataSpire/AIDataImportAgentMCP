@@ -34,7 +34,11 @@ def _default_store():
     # DataEngine prints to stdout while building the engine; keep stdout clean for
     # `importer mcp`, where it is the JSON-RPC stream (design §8.19).
     with contextlib.redirect_stdout(sys.stderr):
-        return MssqlStore(get_engine())
+        try:
+            engine = get_engine()
+        except Exception:
+            engine = get_engine
+        return MssqlStore(engine)
 
 
 def cmd_process(args, store) -> int:
@@ -70,7 +74,10 @@ def cmd_mcp(args, store) -> int:
 
     from .data_guard import clear_marker, mark_server_running
 
-    identity = target_of(store)
+    try:
+        identity = target_of(store)
+    except Exception:
+        identity = None
     marker = mark_server_running()  # the data guard's 'auto' mode is on while this server runs
     try:
         create_server(store, target=banner(identity) if identity else "").run(transport="stdio")
@@ -244,7 +251,15 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_retry)
 
     sub.add_parser("pending", help="list unknown signatures waiting for a mapping").set_defaults(func=cmd_pending)
-    sub.add_parser("mcp", help="run the onboarding MCP server over stdio (for Claude Code / Desktop)").set_defaults(func=cmd_mcp)
+    p = sub.add_parser("mcp", help="run the onboarding MCP server over stdio (for Claude Code / Desktop / Cursor / Smithery)")
+    p.add_argument("--server", help="SQL Server hostname or IP")
+    p.add_argument("--database", help="control database name")
+    p.add_argument("--trusted", action="store_true", default=None, help="use Windows / Trusted authentication")
+    p.add_argument("-u", "--user", help="SQL Server username")
+    p.add_argument("-p", "--password", help="SQL Server password")
+    p.add_argument("--url", help="Full SQLAlchemy connection URL")
+    p.add_argument("--driver", help="ODBC driver name")
+    p.set_defaults(func=cmd_mcp)
 
     config_parser = sub.add_parser("config", help="show or change the shared settings (stored in the database)")
     config_sub = config_parser.add_subparsers(dest="config_command", required=True)
@@ -305,13 +320,31 @@ def main(argv: list[str] | None = None, store=None) -> int:
     if args.command == "setup":
         from .setup_wizard import run_setup
         return run_setup(args)
+
+    from . import db
+    if (getattr(args, "server", None) or getattr(args, "database", None) or getattr(args, "url", None)
+            or getattr(args, "user", None) or getattr(args, "trusted", None)):
+        db.configure_connection(
+            server=getattr(args, "server", None),
+            database=getattr(args, "database", None),
+            user=getattr(args, "user", None),
+            password=getattr(args, "password", None),
+            trusted=getattr(args, "trusted", None),
+            url=getattr(args, "url", None),
+            driver=getattr(args, "driver", None),
+        )
+
     if args.command == "db":
         return cmd_db_init(args) if args.db_command == "init" else cmd_db_rebuild(args)
     store = store if store is not None else _default_store()
     from .environment import banner, target_of
-    identity = target_of(store)
-    if identity is not None:
-        print(banner(identity), file=sys.stderr)
+    try:
+        identity = target_of(store)
+        if identity is not None:
+            print(banner(identity), file=sys.stderr)
+    except Exception as exc:
+        if args.command != "mcp":
+            print(f"Warning: could not connect to database: {exc}", file=sys.stderr)
     return args.func(args, store)
 
 

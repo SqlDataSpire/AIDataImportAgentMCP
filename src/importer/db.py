@@ -18,7 +18,7 @@ import re
 import sys
 import urllib.parse
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from dotenv import dotenv_values
 
@@ -73,6 +73,7 @@ def _detect_odbc_driver(preferred: str | None = None) -> str:
 
 
 _SESSION_PASSWORD: str | None = None
+_RUNTIME_CONFIG: dict[str, Any] = {}
 
 
 def get_session_password() -> str | None:
@@ -82,6 +83,63 @@ def get_session_password() -> str | None:
 def set_session_password(pw: str | None) -> None:
     global _SESSION_PASSWORD
     _SESSION_PASSWORD = pw
+
+
+def configure_connection(
+    *,
+    server: str | None = None,
+    database: str | None = None,
+    user: str | None = None,
+    password: str | None = None,
+    trusted: str | bool | None = None,
+    url: str | None = None,
+    driver: str | None = None,
+) -> None:
+    """Configure connection parameters at runtime (from CLI flags or MCP client parameters)."""
+    global _RUNTIME_CONFIG
+    if url:
+        _RUNTIME_CONFIG = {"type": "mssql", "url": url, "server": "custom", "database": "custom"}
+        return
+    if server:
+        _RUNTIME_CONFIG["server"] = server
+    if database:
+        _RUNTIME_CONFIG["database"] = database
+    if user is not None:
+        _RUNTIME_CONFIG["UN"] = user
+    if password is not None:
+        _RUNTIME_CONFIG["PW"] = password
+        set_session_password(password)
+    if trusted is not None:
+        _RUNTIME_CONFIG["trusted"] = "yes" if trusted in (True, "yes", "true", "1") else "no"
+    if driver is not None:
+        _RUNTIME_CONFIG["driver"] = driver
+    _RUNTIME_CONFIG["type"] = "mssql"
+
+
+def reset_runtime_config() -> None:
+    """Reset any runtime connection overrides."""
+    global _RUNTIME_CONFIG, _SESSION_PASSWORD
+    _RUNTIME_CONFIG = {}
+    _SESSION_PASSWORD = None
+
+
+def current_connection_info() -> dict:
+    """Return non-sensitive summary of current connection settings and authentication status."""
+    try:
+        doc = load_connection_document()
+        trusted = str(doc.get("trusted", "no")).lower() in ("yes", "true", "1")
+        has_pw = bool(doc.get("PW") or _SESSION_PASSWORD or os.environ.get("IMPORTER_PASSWORD"))
+        un = doc.get("UN")
+        return {
+            "server": doc.get("server", ""),
+            "database": doc.get("database", ""),
+            "user": un or ("(windows)" if trusted else ""),
+            "trusted": trusted,
+            "authenticated": trusted or has_pw,
+            "auth_type": "windows" if trusted else ("sql" if un else "unknown"),
+        }
+    except Exception as exc:
+        return {"error": str(exc), "authenticated": False}
 
 
 def _resolve_password(*, un: str | None, server: str, doc: dict) -> str | None:
@@ -133,7 +191,7 @@ def _build_pyodbc_connection_string(*, server: str, database: str, doc: dict) ->
             raise ConfigError(
                 f"Password is required for SQL Server user '{un}' on {server}. "
                 "Provide 'PW' in database.env, set IMPORTER_PASSWORD environment variable, "
-                "or run interactively in a terminal."
+                "pass via CLI/MCP parameters, or call the authenticate tool in MCP."
             )
 
     trust_server_cert = doc.get("TrustServerCertificate", "yes")
@@ -183,29 +241,82 @@ def database_env_path() -> Path:
 
 
 def load_connection_document(path: Path | None = None, name: str = CONNECTION_NAME) -> dict:
+    # 1. Runtime configuration override (e.g. from CLI flags or MCP parameters)
+    if path is None and (_RUNTIME_CONFIG.get("url") or (_RUNTIME_CONFIG.get("server") and _RUNTIME_CONFIG.get("database"))):
+        doc = dict(_RUNTIME_CONFIG)
+        if not doc.get("PW") and _SESSION_PASSWORD:
+            doc["PW"] = _SESSION_PASSWORD
+        return doc
+
+    # 2. Direct IMPORTER_DATABASE_URL environment variable
     if path is None and os.environ.get("IMPORTER_DATABASE_URL"):
         return {"type": "mssql", "url": os.environ["IMPORTER_DATABASE_URL"], "server": "env", "database": "env"}
+
+    # 3. Direct IMPORTER_SERVER & IMPORTER_DATABASE environment variables
+    if path is None and os.environ.get("IMPORTER_SERVER") and os.environ.get("IMPORTER_DATABASE"):
+        doc = {
+            "type": "mssql",
+            "server": os.environ["IMPORTER_SERVER"],
+            "database": os.environ["IMPORTER_DATABASE"],
+            "UN": os.environ.get("IMPORTER_USER") or os.environ.get("IMPORTER_UN"),
+            "PW": os.environ.get("IMPORTER_PASSWORD") or os.environ.get("IMPORTER_PW") or _SESSION_PASSWORD,
+            "trusted": os.environ.get("IMPORTER_TRUSTED", "no"),
+            "driver": os.environ.get("IMPORTER_DRIVER") or os.environ.get("MSSQL_ODBC_DRIVER"),
+        }
+        return doc
+
+    # 4. File-based configuration (database.env or .env)
     path = path or database_env_path()
     if not path.exists():
-        raise ConfigError(f"{path} not found")
-    raw = dotenv_values(path).get("databases")
-    if not raw:
-        raise ConfigError(f"{path} has no 'databases' entry")
-    try:
-        docs = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise ConfigError(f"{path}: 'databases' is not valid JSON: {exc}") from exc
-    doc = docs.get(name)
-    if doc is None:
-        raise ConfigError(f"{path}: no '{name}' connection")
-    if doc.get("type") != "mssql":
-        raise ConfigError(f"connection '{name}' must be type 'mssql'")
-    if not doc.get("PW") and os.environ.get("IMPORTER_PASSWORD"):
-        doc["PW"] = os.environ["IMPORTER_PASSWORD"]
-    for key in ("server", "database"):
-        if not doc.get(key):
-            raise ConfigError(f"connection '{name}' is missing '{key}'")
-    return doc
+        # Also check standard .env if database.env is missing
+        alt_env = path.parent / ".env"
+        if alt_env.exists():
+            path = alt_env
+        else:
+            raise ConfigError(f"{path} not found")
+
+    raw_env = dotenv_values(path)
+
+    # 4a. Legacy JSON embedded format: databases='{"importer": {...}}'
+    if raw_env.get("databases"):
+        raw = raw_env["databases"]
+        try:
+            docs = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise ConfigError(f"{path}: 'databases' is not valid JSON: {exc}") from exc
+        doc = docs.get(name)
+        if doc is None:
+            raise ConfigError(f"{path}: no '{name}' connection")
+        if doc.get("type") != "mssql":
+            raise ConfigError(f"connection '{name}' must be type 'mssql'")
+        if not doc.get("PW") and os.environ.get("IMPORTER_PASSWORD"):
+            doc["PW"] = os.environ["IMPORTER_PASSWORD"]
+        for key in ("server", "database"):
+            if not doc.get(key):
+                raise ConfigError(f"connection '{name}' is missing '{key}'")
+        return doc
+
+    # 4b. Human-friendly flat key-value format: SERVER=... DATABASE=...
+    server = raw_env.get("SERVER") or raw_env.get("IMPORTER_SERVER")
+    database = raw_env.get("DATABASE") or raw_env.get("IMPORTER_DATABASE")
+    if server and database:
+        doc = {
+            "type": "mssql",
+            "server": server,
+            "database": database,
+            "UN": raw_env.get("UN") or raw_env.get("USER") or raw_env.get("IMPORTER_USER") or raw_env.get("IMPORTER_UN"),
+            "PW": raw_env.get("PW") or raw_env.get("PASSWORD") or os.environ.get("IMPORTER_PASSWORD"),
+            "trusted": raw_env.get("TRUSTED") or raw_env.get("IMPORTER_TRUSTED") or "no",
+            "driver": raw_env.get("DRIVER") or raw_env.get("IMPORTER_DRIVER") or raw_env.get("MSSQL_ODBC_DRIVER"),
+        }
+        return doc
+
+    # 4c. URL in flat .env: DATABASE_URL=... or url=...
+    url = raw_env.get("DATABASE_URL") or raw_env.get("IMPORTER_DATABASE_URL") or raw_env.get("url")
+    if url:
+        return {"type": "mssql", "url": url, "server": "env", "database": "env"}
+
+    raise ConfigError(f"{path} has no 'databases' entry and no SERVER/DATABASE keys")
 
 
 def get_engine(path: Path | None = None, name: str = CONNECTION_NAME) -> "Engine":

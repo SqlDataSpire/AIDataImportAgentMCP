@@ -38,7 +38,18 @@ class Settings:
     max_chars: int
 
     def destination(self, name: str) -> Destination | None:
-        return self.destinations.get(name.upper())
+        dest = self.destinations.get(name.upper())
+        if dest is not None:
+            return dest
+        try:
+            from . import db
+            doc = db.load_connection_document()
+            curr_db = doc.get("database", "")
+            if curr_db and name.upper() == curr_db.upper():
+                return Destination(name=curr_db.upper(), server=doc.get("server", "localhost"), database=curr_db)
+        except Exception:
+            pass
+        return None
 
 
 def document(artifacts) -> dict:

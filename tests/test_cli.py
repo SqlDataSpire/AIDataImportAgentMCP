@@ -153,3 +153,27 @@ def test_db_init_requires_the_typed_database_name(monkeypatch, capsys):
     assert cli.main(["db", "init", "--environment", "DEV", "--confirm", "import_agent_dev"]) == 1
     err = capsys.readouterr().err
     assert "importer @ TEST_SERVER/APP_DB [UNSET]" in err and "did not match" in err
+
+
+def test_mcp_cli_connection_parameters(monkeypatch):
+    from importer import db
+
+    configured = {}
+
+    def mock_configure(**kwargs):
+        configured.update(kwargs)
+
+    class FakeServer:
+        def run(self, transport):
+            pass
+
+    monkeypatch.setattr(db, "configure_connection", mock_configure)
+    monkeypatch.setattr("importer.mssql_store.MssqlStore", lambda engine: MemoryStore())
+    monkeypatch.setattr("importer.mcp_server.create_server", lambda store, **kw: FakeServer())
+
+    cli.main(["mcp", "--server", "test-srv", "--database", "test-db", "--trusted"])
+    assert configured.get("server") == "test-srv"
+    assert configured.get("database") == "test-db"
+    assert configured.get("trusted") is True
+    db.reset_runtime_config()
+
