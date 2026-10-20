@@ -26,6 +26,9 @@ permissions:
   contents: write
   id-token: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-release:
     name: Build & Release
@@ -45,12 +48,24 @@ jobs:
         id: tag
         run: |
           if [ -n "${{ inputs.tag_name }}" ]; then
-            echo "tag=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
+            TAG="${{ inputs.tag_name }}"
           elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            TAG="${GITHUB_REF#refs/tags/}"
           else
-            VERSION=$(python -c "import tomllib; print('v' + tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
-            echo "tag=${VERSION}" >> $GITHUB_OUTPUT
+            TAG=$(python -c "import tomllib; print('v' + tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Resolved release tag: ${TAG}"
+
+      - name: Ensure Git tag exists
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Creating annotated tag $TAG..."
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
           fi
 
       - name: Install build tools
@@ -70,10 +85,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
+          name: "Release ${{ steps.tag.outputs.tag }}"
           files: dist/*
           generate_release_notes: true
-          draft: ${{ inputs.draft || false }}
-          prerelease: ${{ inputs.prerelease || false }}
+          draft: ${{ inputs.draft == true }}
+          prerelease: ${{ inputs.prerelease == true }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to PyPI
         if: env.PYPI_API_TOKEN != ''
